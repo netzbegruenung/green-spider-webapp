@@ -1,0 +1,11 @@
+notifications:
+  email: false
+
+language: node_js
+
+script:
+  - make build
+
+cache:
+  directories:
+    - "node_modules"
