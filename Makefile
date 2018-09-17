@@ -8,6 +8,18 @@ dev:
 build:
 	yarn build
 
+# export JSON data for the webapp
+export:
+	docker run --rm -ti \
+		-v $(PWD)/src:/out \
+		-v $(PWD)/secrets:/secrets \
+		-v $(PWD)/public/siteicons:/icons \
+		quay.io/netzbegruenung/green-spider:latest \
+		data_export.py /secrets/datastore-reader.json
+
 # Copy build output to the /docs folder where it's served by Github pages
 dist: build
 	cp -r build docs
+
+clean:
+	rm -rf build
