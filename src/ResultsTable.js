@@ -5,8 +5,6 @@
 import React, { Component } from 'react';
 import punycode from 'punycode';
 import './ResultsTable.css';
-import results from './spider_result.json';
-import screenshots from './screenshots.json';
 import LazyLoad from 'react-lazy-load';
 
 class IconGood extends Component {
@@ -150,9 +148,9 @@ class ScreenshotsField extends Component {
   render() {
     var screenshotElements = [];
 
-    if (this.props.canonicalURLs && this.props.canonicalURLs.length > 0 && typeof screenshots[this.props.canonicalURLs[0]] !== 'undefined') {
-      var mobileScreenshot = 'http://green-spider-screenshots.sendung.de/320x640/'+screenshots[this.props.canonicalURLs[0]];
-      var desktopScreenshot = 'http://green-spider-screenshots.sendung.de/1500x1500/'+screenshots[this.props.canonicalURLs[0]];
+    if (this.props.screenshot !== null && typeof this.props.screenshot !== 'undefined') {
+      var mobileScreenshot = 'http://green-spider-screenshots.sendung.de/320x640/' + this.props.screenshot;
+      var desktopScreenshot = 'http://green-spider-screenshots.sendung.de/1500x1500/' + this.props.screenshot;
       screenshotElements.push(<a key='mobile' className='screenshot tt' href={mobileScreenshot} target='_blank' title='Screenshot für Smartphone-Ansicht anzeigen'><i className='icon ion-md-phone-portrait'></i></a>);
       screenshotElements.push(<a key='desktop' className="screenshot tt" href={desktopScreenshot} target='_blank' title='Screenshot für Desktop-Ansicht anzeigen'><i className='icon ion-md-desktop'></i></a>);
     }
@@ -230,31 +228,39 @@ class WWWOptionalField extends Component {
 class ResultsTable extends Component {
   render() {
     // sort results by score (descending)
-    results.sort((a, b) => {
+    this.props.results.sort((a, b) => {
       return b.score - a.score;
     });
 
     var rows = [];
-    results.forEach(element => {
+    this.props.results.forEach((element, index) => {
 
       var fields = [
-        <TypeField level={element.meta.level} />,
-        <StateField state={element.meta.state} />,
-        <DistrictField district={element.meta.district} />,
-        <CityField city={element.meta.city} />,
-        <URLField inputURL={element.input_url} canonicalURLs={element.details.canonical_urls} />,
-        <ScoreField score={element.score} />,
-        <IPField ipaddresses={element.details.ipv4_addresses} />,
-        <ReachableField data={element.result.SITE_REACHABLE} />,
-        <ResponseDurationField data={element.result.HTTP_RESPONSE_DURATION} />,
-        <FaviconField data={element.result.FAVICON} icons={element.details.icons} />,
-        <HTTPSField data={element.result.HTTPS} />,
-        <WWWOptionalField data={element.result.WWW_OPTIONAL} />,
-        <CanonicalURLField data={element.result.CANONICAL_URL} />,
-        <ResponsiveField data={element.result.RESPONSIVE} />,
-        <FeedField data={element.result.FEEDS} />,
-        <ScreenshotsField canonicalURLs={element.details.canonical_urls} />,
-        <CMSField cms={element.details.cms} />,
+        <TypeField key={'tf'+index} level={element.meta.level} />,
+        <StateField key={'sf'+index} state={element.meta.state} />,
+        <DistrictField key={'df'+index} district={element.meta.district} />,
+        <CityField key={'cf'+index} city={element.meta.city} />,
+        <URLField key={'uf'+index} inputURL={element.input_url} canonicalURLs={element.details.canonical_urls} />,
+        <ScoreField key={'scf'+index} score={element.score} />,
+        <IPField key={'if'+index} ipaddresses={element.details.ipv4_addresses} />,
+        <ReachableField key={'rf'+index} data={element.result.SITE_REACHABLE} />,
+        <ResponseDurationField key={'rdf'+index} data={element.result.HTTP_RESPONSE_DURATION} />,
+        <FaviconField key={'fif'+index} data={element.result.FAVICON} icons={element.details.icons} />,
+        <HTTPSField key={'htpsf'+index} data={element.result.HTTPS} />,
+        <WWWOptionalField key={'wwwof'+index} data={element.result.WWW_OPTIONAL} />,
+        <CanonicalURLField key={'curlf'+index} data={element.result.CANONICAL_URL} />,
+        <ResponsiveField key={'rspf'+index} data={element.result.RESPONSIVE} />,
+        <FeedField key={'ff'+index} data={element.result.FEEDS} />,
+        <ScreenshotsField
+          key={'ssf'+index}
+          screenshot={
+            (element.details.canonical_urls && element.details.canonical_urls.length > 0 && typeof this.props.screenshots[element.details.canonical_urls[0]] !== 'undefined' && this.props.screenshots[element.details.canonical_urls[0]] !== null)
+            ?
+            this.props.screenshots[element.details.canonical_urls[0]]
+            :
+            null
+          } />,
+        <CMSField key={'cmsf'+index} cms={element.details.cms} />,
       ];
 
       rows.push(<tr key={element.input_url}>{ fields }</tr>)

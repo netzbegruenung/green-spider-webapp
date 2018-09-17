@@ -15,13 +15,23 @@ npm run build
 
 yarn test
   Starts the test runner.
-
-yarn eject
-  Removes this tool and copies build dependencies, configuration files
-  and scripts into the app directory. If you do this, you can’t go back!
 ```
 
-## Gnerated README
+To update the published content:
+
+```
+make export
+  Creates a new JSON data export for spider results, 
+  screenshots, and downloads site icons.
+
+make clean && make dist
+  Recreates the content in the docs/ folder, which is
+  what is published via Github pages.
+```
+
+----
+
+## Generated README
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
