@@ -1,0 +1,61 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+h5 {
+  font-family: 'Arvo Gruen', sans-serif;
+  font-weight: bold;
+  color: #ffee00;
+  text-transform: uppercase;
+}
+
+table {
+  font-size: 0.8rem;
+}
+.bad {
+  color: #ae4b53;
+  background-color: #d7b0ae;
+  font-size: 1rem;
+}
+.medium {
+  color: #c49863;
+  background-color: #e3d9ba;
+  font-size: 1rem;
+}
+.good {
+  color: #46962b;
+  background-color: #bcd9b3;
+  font-size: 1rem;
+}
+
+td.text {
+  font-size: 0.8rem;
+}
+
+a.screenshot {
+  display: inline-block;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+.header {
+  background-color: #46962b;
+}
+
+.icon {
+  width: 32px;
+  height: 32px;
+  font-size: 24px;
+}
+.screenshot .icon {
+  color: #212529;
+}
+
+.siteicon {
+  max-width: 32px;
+  max-height: 32px;
+  width: auto;
+  height: auto;
+}
