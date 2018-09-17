@@ -59,8 +59,13 @@ class DistrictField extends Component {
 
 class FaviconField extends Component {
   render() {
-    if (this.props.data.value) {
-      return <td className='good'>Ja</td>;
+    var icons = [];
+    if (typeof this.props.icons !== 'undefined') {
+      icons = Object.values(this.props.icons);
+    }
+
+    if (this.props.data.value && icons.length) {
+      return <td key='favicon' className='good'><img src={'/siteicons/' + icons[0]} width='32' height='32' alt='Icon' /></td>;
     }
     return <CriteriumField keyProp='favicon' type='negative' title='Die Site hat kein Icon' />;
   }
@@ -87,20 +92,20 @@ class HTTPSField extends Component {
 class IPField extends Component {
   render() {
     if (this.props.ipaddresses && this.props.ipaddresses.length) {
-      return <td key='ipaddresses' className='good'>{ this.props.ipaddresses }</td>;
+      return <td key='ipaddresses' className='good text'>{ this.props.ipaddresses }</td>;
     }
-    return <td key='ipaddresses' className='bad'><IconBad title='Der Domainname lässt sich nicht in eine IP-Adresse auflösen' /></td>;
+    return <CriteriumField keyProp='ipaddresses' type='negative' title='Der Domainname lässt sich nicht in eine IP-Adresse auflösen' />;
   }
 }
 
 class ResponseDurationField extends Component {
   render() {
-    var className = 'bad';
+    var className = 'bad text';
     if (this.props.data.score > 0) {
-      className = 'mediocre';
+      className = 'mediocre text';
     }
     if (this.props.data.score > 0.5) {
-      className = 'good';
+      className = 'good text';
     }
 
     if (this.props.data.value) {
@@ -169,12 +174,13 @@ class TypeField extends Component {
     } else if (label === 'DE:LANDESVERBAND') {
       label = 'LV';
     }
-    return <td key='type'>{ label }</td>;
+    return <td key='typefield'>{ label }</td>;
   }
 }
 
 class URLField extends Component {
   
+  // truncation for too long URLs
   trunc(s, length) {
     if (s.length > length) {
       s = s.substring(0, length) + '…';
@@ -183,8 +189,25 @@ class URLField extends Component {
   }
 
   render() {
-    var displayURL = this.trunc(punycode.toUnicode(this.props.url), 45);
-    return <td><a href={this.props.url} target="_blank" rel='noopener noreferrer'> { displayURL }</a></td>;
+    var inputDisplayURL = this.trunc(punycode.toUnicode(this.props.inputURL), 45);
+
+    // There is a canonical URL...
+    if (typeof this.props.canonicalURLs !== 'undefined' && this.props.canonicalURLs.length === 1) {
+
+      // and it is the same as the input URL
+      if (this.props.inputURL === this.props.canonicalURLs[0]) {
+        return <td key='url'>→ <a href={this.props.inputURL} target="_blank" rel='noopener noreferrer'> { inputDisplayURL }</a></td>;
+      }
+
+      return (
+        <td key='url'>
+          <a href={this.props.inputURL} target="_blank" rel='noopener noreferrer'> { inputDisplayURL }</a><br />
+          → <a href={this.props.canonicalURLs[0]} target="_blank" rel='noopener noreferrer'> { this.props.canonicalURLs[0] }</a>
+        </td>
+      );
+    }
+
+    return <td key='url'><a href={this.props.inputURL} target="_blank" rel='noopener noreferrer'> { inputDisplayURL }</a></td>;
   }
 }
 
@@ -199,22 +222,25 @@ class WWWOptionalField extends Component {
 
 class ResultsTable extends Component {
   render() {
+    // sort results by score (descending)
+    results.sort((a, b) => {
+      return b.score - a.score;
+    });
 
     var rows = [];
     results.forEach(element => {
-      console.log(element);
 
       var fields = [
         <TypeField level={element.meta.level} />,
         <StateField state={element.meta.state} />,
         <DistrictField district={element.meta.district} />,
         <CityField city={element.meta.city} />,
-        <URLField url={element.input_url} />,
+        <URLField inputURL={element.input_url} canonicalURLs={element.details.canonical_urls} />,
         <ScoreField score={element.score} />,
         <IPField ipaddresses={element.details.ipv4_addresses} />,
         <ReachableField data={element.result.SITE_REACHABLE} />,
         <ResponseDurationField data={element.result.HTTP_RESPONSE_DURATION} />,
-        <FaviconField data={element.result.FAVICON} />,
+        <FaviconField data={element.result.FAVICON} icons={element.details.icons} />,
         <HTTPSField data={element.result.HTTPS} />,
         <WWWOptionalField data={element.result.WWW_OPTIONAL} />,
         <CanonicalURLField data={element.result.CANONICAL_URL} />,
