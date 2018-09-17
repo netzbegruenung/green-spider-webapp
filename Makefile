@@ -19,6 +19,7 @@ export:
 
 # Copy build output to the /docs folder where it's served by Github pages
 dist: build
+	rm -rf docs
 	cp -r build docs
 
 clean:
