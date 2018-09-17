@@ -7,6 +7,7 @@ import punycode from 'punycode';
 import './ResultsTable.css';
 import results from './spider_result.json';
 import screenshots from './screenshots.json';
+import LazyLoad from 'react-lazy-load';
 
 class IconGood extends Component {
   render() {
@@ -65,7 +66,13 @@ class FaviconField extends Component {
     }
 
     if (this.props.data.value && icons.length) {
-      return <td key='favicon' className='good'><img src={'/siteicons/' + icons[0]} width='32' height='32' alt='Icon' /></td>;
+      return (
+        <td key='favicon' className='good'>
+          <LazyLoad width={32} height={32}>
+            <img src={'/siteicons/' + icons[0]} width={32} height={32} alt='Icon' />
+          </LazyLoad>
+        </td>
+      );
     }
     return <CriteriumField keyProp='favicon' type='negative' title='Die Site hat kein Icon' />;
   }
