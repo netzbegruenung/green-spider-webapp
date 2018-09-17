@@ -1,3 +1,7 @@
+/**
+ * The ResultsTable component is a table of results for all websites we checked.
+ */
+
 import React, { Component } from 'react';
 import punycode from 'punycode';
 import './ResultsTable.css';
