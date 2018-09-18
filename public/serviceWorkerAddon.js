@@ -7,8 +7,19 @@ self.addEventListener('fetch', function(event) {
   var shouldRespond = false;
   if (event.request.method === 'GET') {
     
-    // request for an icon
+    console.log(event.request.url);
+    // icon
     if (event.request.url.indexOf('/siteicons/') !== -1) {
+      shouldRespond = true;
+    }
+
+    // webfonts
+    else if (event.request.url.indexOf('https://netzbegruenung.github.io') !== -1) {
+      shouldRespond = true;
+    }
+
+    // ionicons
+    else if (event.request.url.indexOf('https://unpkg.com/ionicons') !== -1) {
       shouldRespond = true;
     }
 
