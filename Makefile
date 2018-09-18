@@ -22,5 +22,8 @@ dist: build
 	rm -rf docs
 	cp -r build docs
 
+serve-prod:
+	cd docs && python3 -m http.server
+
 clean:
 	rm -rf build
