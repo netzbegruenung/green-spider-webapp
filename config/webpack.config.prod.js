@@ -301,6 +301,7 @@ module.exports = {
       // If a URL is already hashed by Webpack, then there is no concern
       // about it being stale, and the cache-busting can be skipped.
       dontCacheBustUrlsMatching: /\.\w{8}\./,
+      maximumFileSizeToCacheInBytes: 4194304, // 4 MB
       filename: 'service-worker.js',
       logger(message) {
         if (message.indexOf('Total precache size is') === 0) {
@@ -314,7 +315,10 @@ module.exports = {
         }
         console.log(message);
       },
-      minify: true,
+      minify: false, // TODO: minify once testing is done
+      importScripts: [
+        '/serviceWorkerAddon.js',
+      ],
       // For unknown URLs, fallback to the index page
       navigateFallback: publicUrl + '/index.html',
       // Ignores URLs starting from /__ (useful for Firebase):
