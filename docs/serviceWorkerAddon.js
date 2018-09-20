@@ -6,8 +6,6 @@
 self.addEventListener('fetch', function(event) {
   var shouldRespond = false;
   if (event.request.method === 'GET') {
-    
-    console.log(event.request.url);
     // icon
     if (event.request.url.indexOf('/siteicons/') !== -1) {
       shouldRespond = true;

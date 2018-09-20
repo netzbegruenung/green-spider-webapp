@@ -315,7 +315,7 @@ module.exports = {
         }
         console.log(message);
       },
-      minify: false, // TODO: minify once testing is done
+      minify: true,
       importScripts: [
         '/serviceWorkerAddon.js',
       ],
