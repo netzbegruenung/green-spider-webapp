@@ -204,6 +204,12 @@ class URLField extends Component {
         return <td key='url'>→ <a href={this.props.inputURL} target="_blank" rel='noopener noreferrer'> { inputDisplayURL }</a></td>;
       }
 
+      // canonical URL contains input URL (as prefix)
+      if (this.props.canonicalURLs[0].indexOf(this.props.inputURL) === 0) {
+        var targetLabel = '/' + this.props.canonicalURLs[0].substr(this.props.inputURL.length);
+        return <td key='url'><a href={this.props.inputURL} target="_blank" rel='noopener noreferrer'> { inputDisplayURL }</a> → <a href={this.props.canonicalURLs[0]} rel='noopener noreferrer'>{targetLabel}</a></td>;
+      }
+
       return (
         <td key='url'>
           <a href={this.props.inputURL} target="_blank" rel='noopener noreferrer'> { inputDisplayURL }</a><br />
@@ -212,6 +218,7 @@ class URLField extends Component {
       );
     }
 
+    // no canonical URL
     return <td key='url'><a href={this.props.inputURL} target="_blank" rel='noopener noreferrer'> { inputDisplayURL }</a></td>;
   }
 }
