@@ -167,17 +167,19 @@ class StateField extends Component {
 
 class TypeField extends Component {
   render() {
-    var label = this.props.level;
-    if (label === 'DE:ORTSVERBAND') {
-      label = 'OV';
-    } else if (label === 'DE:KREISVERBAND') {
-      label = 'KV';
-    } else if (label === 'DE:REGIONALVERBAND') {
-      label = 'RV';
-    } else if (label === 'DE:BEZIRKSVERBAND') {
-      label = 'BV';
-    } else if (label === 'DE:LANDESVERBAND') {
-      label = 'LV';
+    var label;
+    if (this.props.level === 'DE:BUNDESVERBAND') {
+      label = <abbr title='Bundesverband'>BV</abbr>;
+    } else if (this.props.level === 'DE:ORTSVERBAND') {
+      label = <abbr title='Ortsverband'>OV</abbr>;
+    } else if (this.props.level === 'DE:KREISVERBAND') {
+      label = <abbr title='Kreisverband'>KV</abbr>;
+    } else if (this.props.level === 'DE:REGIONALVERBAND') {
+      label = <abbr title='Regionalverband'>RV</abbr>;
+    } else if (this.props.level === 'DE:BEZIRKSVERBAND') {
+      label = <abbr title='Bezirksverband'>BeV</abbr>;
+    } else if (this.props.level === 'DE:LANDESVERBAND') {
+      label = <abbr title='Landesverband'>LV</abbr>;
     }
     return <td key='typefield'>{ label }</td>;
   }
