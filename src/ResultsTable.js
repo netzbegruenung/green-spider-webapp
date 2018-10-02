@@ -155,10 +155,12 @@ class ScoreField extends Component {
 class ScreenshotsField extends Component {
   render() {
     var screenshotElements = [];
+    var baseURL = 'http://green-spider-screenshots.sendung.de';
+
 
     if (this.props.screenshot !== null && typeof this.props.screenshot !== 'undefined') {
-      var mobileScreenshot = 'http://green-spider-screenshots.sendung.de/360x640/' + this.props.screenshot;
-      var desktopScreenshot = 'http://green-spider-screenshots.sendung.de/1500x1500/' + this.props.screenshot;
+      var mobileScreenshot = baseURL + '/360x640/' + this.props.screenshot;
+      var desktopScreenshot = baseURL + '/1500x1500/' + this.props.screenshot;
       screenshotElements.push(<a key='mobile' className='screenshot tt' href={mobileScreenshot} target='_blank' title='Screenshot für Smartphone-Ansicht anzeigen'><i className='icon ion-md-phone-portrait'></i></a>);
       screenshotElements.push(<a key='desktop' className="screenshot tt" href={desktopScreenshot} target='_blank' title='Screenshot für Desktop-Ansicht anzeigen'><i className='icon ion-md-desktop'></i></a>);
     }
