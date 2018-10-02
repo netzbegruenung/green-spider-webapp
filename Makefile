@@ -1,5 +1,5 @@
 
-IMAGE := quay.io/netzbegruenung/green-spider:dev
+IMAGE := quay.io/netzbegruenung/green-spider:latest
 
 # Run a development server and load it in your default browser.
 # Will reload as soon as some source has changed.
