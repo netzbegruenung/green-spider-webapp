@@ -30,4 +30,4 @@ export:
 		$(IMAGE) \
 		--credentials-path /secrets/datastore-reader.json \
 		--loglevel info \
-		export --kind spider-results-dev
+		export --kind spider-results
