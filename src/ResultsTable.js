@@ -6,7 +6,6 @@ import React, { Component } from 'react';
 import punycode from 'punycode';
 import './ResultsTable.css';
 import LazyLoad from 'react-lazy-load';
-import _ from 'underscore';
 
 class IconGood extends Component {
   render() {
@@ -374,7 +373,7 @@ class ResultsTable extends Component {
         <ScriptErrorsField key={'se'+index} data={element.rating.NO_SCRIPT_ERRORS} />,
         <NetworkErrorsField key={'ne'+index} data={element.rating.NO_NETWORK_ERRORS} />,
         <ScreenshotsField key={'ssf'+index} screenshot={screenshots} />,
-        <CMSField key={'cmsf'+index} cms={_.flatten(_.map(element.checks.generator, function(v, url){ return v;}))} />,
+        <CMSField key={'cmsf'+index} cms={element.cms} />,
       ];
 
       rows.push(<tr key={element.input_url}>{ fields }</tr>)
