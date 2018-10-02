@@ -1711,7 +1711,7 @@
     ],
     "created": "2018-10-02T12:45:40.543963+00:00",
     "icons": {
-      "https://gruene-barsinghausen.de/": "3c4dea2f646571881e8d882c2b07531a.ico"
+      "https://www.gruene-barsinghausen.de/": "3c4dea2f646571881e8d882c2b07531a.ico"
     },
     "input_url": "http://gruene-barsinghausen.de/",
     "meta": {
@@ -8536,7 +8536,7 @@
     ],
     "created": "2018-10-02T11:39:25.211579+00:00",
     "icons": {
-      "https://www.gruene-laatzen.de/": "3c4dea2f646571881e8d882c2b07531a.ico"
+      "https://gruene-laatzen.de/": "3c4dea2f646571881e8d882c2b07531a.ico"
     },
     "input_url": "http://gruene-laatzen.de/",
     "meta": {
@@ -13560,7 +13560,7 @@
     ],
     "created": "2018-10-02T12:38:00.243681+00:00",
     "icons": {
-      "http://gruene-rendsburg-eckernfoerde.de/": "b0166db4002d18f757c53ff6c34cb3ab.png"
+      "http://www.gruene-rendsburg-eckernfoerde.de/": "b0166db4002d18f757c53ff6c34cb3ab.png"
     },
     "input_url": "http://gruene-rendsburg-eckernfoerde.de/",
     "meta": {
@@ -24491,7 +24491,7 @@
     ],
     "created": "2018-10-02T13:52:24.113785+00:00",
     "icons": {
-      "http://gruene-blomberg.de/": "bdfb10eae0a5c3da60676ab1f02e0e0b.ico"
+      "http://www.gruene-blomberg.de/": "bdfb10eae0a5c3da60676ab1f02e0e0b.ico"
     },
     "input_url": "http://www.gruene-blomberg.de/",
     "meta": {
@@ -25348,7 +25348,7 @@
     ],
     "created": "2018-10-02T13:24:09.743669+00:00",
     "icons": {
-      "http://www.gruene-brookmerland-hinte-suedbrookmerland.de/": "b0166db4002d18f757c53ff6c34cb3ab.png"
+      "http://gruene-brookmerland-hinte-suedbrookmerland.de/": "b0166db4002d18f757c53ff6c34cb3ab.png"
     },
     "input_url": "http://www.gruene-brookmerland-hinte-suedbrookmerland.de/",
     "meta": {
@@ -32650,7 +32650,7 @@
     ],
     "created": "2018-10-02T12:58:47.453228+00:00",
     "icons": {
-      "https://www.gruene-gelsenkirchen.de/": "b0166db4002d18f757c53ff6c34cb3ab.png"
+      "http://www.gruene-gelsenkirchen.de/": "b0166db4002d18f757c53ff6c34cb3ab.png"
     },
     "input_url": "http://www.gruene-gelsenkirchen.de/",
     "meta": {
@@ -35769,7 +35769,7 @@
     ],
     "created": "2018-10-02T11:43:27.504203+00:00",
     "icons": {
-      "https://www.gruene-hannover.de/": "3c4dea2f646571881e8d882c2b07531a.ico"
+      "https://gruene-hannover.de/": "3c4dea2f646571881e8d882c2b07531a.ico"
     },
     "input_url": "http://www.gruene-hannover.de",
     "meta": {
@@ -36248,7 +36248,7 @@
     ],
     "created": "2018-10-02T11:25:04.346323+00:00",
     "icons": {
-      "http://gruene-havixbeck.de/": "18f1edbd361b70444fd7c7559c1754a0.ico"
+      "http://www.gruene-havixbeck.de/": "18f1edbd361b70444fd7c7559c1754a0.ico"
     },
     "input_url": "http://www.gruene-havixbeck.de",
     "meta": {
@@ -41184,7 +41184,7 @@
     ],
     "created": "2018-10-02T13:38:31.750510+00:00",
     "icons": {
-      "http://www.gruene-lage.de/": "042f0bf5868511974bfd22dcf2278fd8.ico"
+      "http://gruene-lage.de/": "042f0bf5868511974bfd22dcf2278fd8.ico"
     },
     "input_url": "http://www.gruene-lage.de/",
     "meta": {
@@ -50847,7 +50847,7 @@
     ],
     "created": "2018-10-02T13:23:25.069655+00:00",
     "icons": {
-      "http://www.gruene-os-land.de/start/ortsverbaende/bad-rothenfelde/": "99b2c4656862aa2091be146489d783d8.ico"
+      "https://gruene-os-landkreis.de/startseite/": "99b2c4656862aa2091be146489d783d8.ico"
     },
     "input_url": "http://www.gruene-os-land.de/start/ortsverbaende/bad-rothenfelde/",
     "meta": {
@@ -100116,8 +100116,8 @@
   },
   {
     "cms": [
-      "wordpress",
-      null
+      null,
+      "wordpress"
     ],
     "created": "2018-10-02T11:27:08.187616+00:00",
     "icons": {},
@@ -106464,7 +106464,7 @@
     ],
     "created": "2018-10-02T12:34:13.180732+00:00",
     "icons": {
-      "https://www.gruene-freigericht.de/": "1a345584649d5ec47d61b6f0b73a869d.ico"
+      "https://gruene-freigericht.de/": "1a345584649d5ec47d61b6f0b73a869d.ico"
     },
     "input_url": "https://www.gruene-freigericht.de/",
     "meta": {
@@ -106844,7 +106844,9 @@
       "wordpress-urwahl"
     ],
     "created": "2018-10-02T13:37:10.316300+00:00",
-    "icons": {},
+    "icons": {
+      "https://www.gruene-gellersen.de/": "b0166db4002d18f757c53ff6c34cb3ab.png"
+    },
     "input_url": "https://www.gruene-gellersen.de/",
     "meta": {
       "city": "Gellersen",
@@ -121910,7 +121912,7 @@
     ],
     "created": "2018-10-02T14:02:08.331468+00:00",
     "icons": {
-      "https://grueneammersbek.de/": "c3fe41066db45f18d0590642b0a94012.ico"
+      "https://www.grueneammersbek.de/": "c3fe41066db45f18d0590642b0a94012.ico"
     },
     "input_url": "https://www.grueneammersbek.de/",
     "meta": {
