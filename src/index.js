@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import '../node_modules/bootstrap/dist/css/bootstrap.css';
 import './index.css';
-import results from './spider_result.json';
+import results from './spider_result_compact.json';
 import screenshots from './screenshots.json';
 import StatusInfo from './StatusInfo';
 import ResultsTable from './ResultsTable';
