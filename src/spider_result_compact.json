@@ -1711,7 +1711,7 @@
     ],
     "created": "2018-10-07T20:14:18.054210+00:00",
     "icons": {
-      "https://gruene-barsinghausen.de/": "3c4dea2f646571881e8d882c2b07531a.ico"
+      "https://www.gruene-barsinghausen.de/": "3c4dea2f646571881e8d882c2b07531a.ico"
     },
     "input_url": "http://gruene-barsinghausen.de/",
     "meta": {
@@ -3698,7 +3698,7 @@
     ],
     "created": "2018-10-07T20:16:59.579145+00:00",
     "icons": {
-      "https://www.gruene-burgdorf.de/": "3c4dea2f646571881e8d882c2b07531a.ico"
+      "https://gruene-burgdorf.de/": "3c4dea2f646571881e8d882c2b07531a.ico"
     },
     "input_url": "http://gruene-burgdorf.de/",
     "meta": {
@@ -5873,7 +5873,7 @@
     ],
     "created": "2018-10-07T20:02:38.780664+00:00",
     "icons": {
-      "https://gruene-garbsen.de/": "3c4dea2f646571881e8d882c2b07531a.ico"
+      "https://www.gruene-garbsen.de/": "3c4dea2f646571881e8d882c2b07531a.ico"
     },
     "input_url": "http://gruene-garbsen.de/",
     "meta": {
@@ -7483,7 +7483,7 @@
     ],
     "created": "2018-10-07T20:31:33.002446+00:00",
     "icons": {
-      "https://www.gruene-isernhagen.de/": "3c4dea2f646571881e8d882c2b07531a.ico"
+      "https://gruene-isernhagen.de/": "3c4dea2f646571881e8d882c2b07531a.ico"
     },
     "input_url": "http://gruene-isernhagen.de/",
     "meta": {
@@ -11929,7 +11929,7 @@
     ],
     "created": "2018-10-07T20:27:08.625445+00:00",
     "icons": {
-      "https://www.gruene-nuembrecht.de/": "ccee93bd02b00be593e0ab7b81491fdd.ico"
+      "http://www.gruene-nuembrecht.de/": "ccee93bd02b00be593e0ab7b81491fdd.ico"
     },
     "input_url": "http://gruene-nuembrecht.de",
     "meta": {
@@ -20968,7 +20968,7 @@
     ],
     "created": "2018-10-07T20:16:00.722445+00:00",
     "icons": {
-      "http://www.galb.de/": "b15c61968c780e09ed43bbe05688fc62.ico"
+      "http://galb.de/": "b15c61968c780e09ed43bbe05688fc62.ico"
     },
     "input_url": "http://www.galb.de/",
     "meta": {
@@ -25785,7 +25785,7 @@
     ],
     "created": "2018-10-07T20:02:19.348973+00:00",
     "icons": {
-      "http://www.gruene-brookmerland-hinte-suedbrookmerland.de/": "b0166db4002d18f757c53ff6c34cb3ab.png"
+      "http://gruene-brookmerland-hinte-suedbrookmerland.de/": "b0166db4002d18f757c53ff6c34cb3ab.png"
     },
     "input_url": "http://www.gruene-brookmerland-hinte-suedbrookmerland.de/",
     "meta": {
@@ -41681,7 +41681,7 @@
     ],
     "created": "2018-10-07T20:22:53.459825+00:00",
     "icons": {
-      "http://gruene-lage.de/": "042f0bf5868511974bfd22dcf2278fd8.ico"
+      "http://www.gruene-lage.de/": "042f0bf5868511974bfd22dcf2278fd8.ico"
     },
     "input_url": "http://www.gruene-lage.de/",
     "meta": {
@@ -51329,8 +51329,8 @@
   },
   {
     "cms": [
-      "typo3-gcms",
-      null
+      null,
+      "typo3-gcms"
     ],
     "created": "2018-10-07T20:19:06.143232+00:00",
     "icons": {},
@@ -61434,7 +61434,7 @@
     ],
     "created": "2018-10-07T19:26:17.691770+00:00",
     "icons": {
-      "http://gruene-wachtendonk.de/": "75da0b668686a57ff9622eeb5f54a2b5.ico"
+      "http://www.gruene-wachtendonk.de/": "75da0b668686a57ff9622eeb5f54a2b5.ico"
     },
     "input_url": "http://www.gruene-wachtendonk.de/",
     "meta": {
@@ -109152,7 +109152,7 @@
     ],
     "created": "2018-10-07T20:40:06.094820+00:00",
     "icons": {
-      "https://gruene-freigericht.de/": "1a345584649d5ec47d61b6f0b73a869d.ico"
+      "https://www.gruene-freigericht.de/": "1a345584649d5ec47d61b6f0b73a869d.ico"
     },
     "input_url": "https://www.gruene-freigericht.de/",
     "meta": {
@@ -119470,7 +119470,7 @@
     ],
     "created": "2018-10-07T20:35:53.277313+00:00",
     "icons": {
-      "https://www.gruene-rhede.de/": "b0166db4002d18f757c53ff6c34cb3ab.png"
+      "https://gruene-rhede.de/": "b0166db4002d18f757c53ff6c34cb3ab.png"
     },
     "input_url": "https://www.gruene-rhede.de/",
     "meta": {
@@ -120507,9 +120507,7 @@
       "typo3"
     ],
     "created": "2018-10-07T20:38:46.442781+00:00",
-    "icons": {
-      "https://www.gruene-sachsen.de/startseite/": "7d70923f50d6a591b474519c1ff1fb41.ico"
-    },
+    "icons": {},
     "input_url": "https://www.gruene-sachsen.de/",
     "meta": {
       "city": null,
@@ -125151,7 +125149,7 @@
     ],
     "created": "2018-10-07T20:00:36.617646+00:00",
     "icons": {
-      "https://grueneammersbek.de/": "c3fe41066db45f18d0590642b0a94012.ico"
+      "https://www.grueneammersbek.de/": "c3fe41066db45f18d0590642b0a94012.ico"
     },
     "input_url": "https://www.grueneammersbek.de/",
     "meta": {
