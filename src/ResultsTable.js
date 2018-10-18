@@ -3,50 +3,14 @@
  */
 
 import React, { Component } from 'react';
-import punycode from 'punycode';
+import { Link } from "react-router-dom";
 import './ResultsTable.css';
-import LazyLoad from 'react-lazy-load';
+import punycode from 'punycode';
 
-class IconGood extends Component {
-  render() {
-    return <i className='icon ion-md-checkmark-circle' title={this.props.title}></i>;
-  }
-}
-
-class IconBad extends Component {
-  render() {
-    return <i className='icon ion-md-close-circle' title={this.props.title}></i>;
-  }
-}
-
-class CriteriumField extends Component {
-  render() {
-    if (this.props.type === 'positive') {
-      return <td key={this.props.keyProp} className='good'><IconGood title={this.props.title}/></td>;
-    } else {
-      return <td key={this.props.keyProp} className='bad'><IconBad title={this.props.title}/></td>;
-    }
-  }
-}
-
-class CanonicalURLField extends Component {
-  render() {
-    if (this.props.data.value) {
-      return <CriteriumField keyProp='canonicalurl' type='positive' title='Verschiedene URL-Varianten werden auf eine einzige umgeleitet' />
-    }
-    return <CriteriumField keyProp='canonicalurl' type='negative' title='Verschiedene URL-Varianten werden nicht auf eine einzige umgeleitet' />
-  }
-}
 
 class CityField extends Component {
   render() {
     return <td key='city'>{ this.props.city }</td>;
-  }
-}
-
-class CMSField extends Component {
-  render() {
-    return <td key='cms'>{ this.props.cms }</td>;
   }
 }
 
@@ -56,115 +20,9 @@ class DistrictField extends Component {
   }
 }
 
-class FaviconField extends Component {
-  render() {
-    var icons = [];
-    if (typeof this.props.icons !== 'undefined') {
-      icons = Object.values(this.props.icons);
-    }
-
-    if (this.props.data.value) {
-      // icon is available for display
-      if (icons.length) {
-        return (
-          <td key='favicon' className='good'>
-            <LazyLoad width={32} height={32}>
-              <img src={'/siteicons/' + icons[0]} width={32} height={32} alt='Icon' />
-            </LazyLoad>
-          </td>
-        );
-      }
-      return <CriteriumField keyProp='favicon' type='positive' title='Die Site hat ein Icon, das jedoch nicht herunter geladen werden konnte.' />;
-    }
-    return <CriteriumField keyProp='favicon' type='negative' title='Die Site hat kein Icon' />;
-  }
-}
-
-class FeedField extends Component {
-  render() {
-    if (this.props.data.value) {
-      return <CriteriumField keyProp='feed' type='positive' title='Die Site verweist auf mind. einen RSS-/Atom-Feed' />;
-    }
-    return <CriteriumField keyProp='feed' type='negative' title='Kein Link rel=alternate auf einen RSS-/Atom-Feed gefunden' />;
-  }
-}
-
-class FontField extends Component {
-  render() {
-    if (typeof this.props.data !== 'undefined') {
-      if (this.props.data.value) {
-        return <CriteriumField keyProp='font' type='positive' title='Die Site verwendet die Schriftart Arvo' />;
-      }
-      return <CriteriumField keyProp='font' type='negative' title='Die Site verwendet die Schriftart Arvo nicht' />;
-    }
-    return <td key='font'></td>;
-  }
-}
-
-class HTTPSField extends Component {
-  render() {
-    if (this.props.data.value) {
-      return <CriteriumField keyProp='https' type='positive' title='Die Site ist über HTTPS erreichbar' />
-    }
-    return <CriteriumField keyProp='https' type='negative' title='Die Site ist nicht über HTTPS erreichbar (-2 Punkte)' />
-  }
-}
-
-class ResponseDurationField extends Component {
-  render() {
-    var className = 'bad text';
-    if (this.props.data.score > 0) {
-      className = 'mediocre text';
-    }
-    if (this.props.data.score > 0.5) {
-      className = 'good text';
-    }
-
-    if (this.props.data.value) {
-      return <td key='duration' className={className}>{ this.props.data.value } ms</td>;
-    }
-    return <CriteriumField keyProp='duration' type='negative' title='Keine Angabe' />
-  }
-}
-
-class ReachableField extends Component {
-  render() {
-    if (this.props.data.value) {
-      return <CriteriumField keyProp='reachable' type='positive' title='Die Site war beim Test erreichbar' />
-    }
-    return <CriteriumField keyProp='reachable' type='negative' title='Die Site war beim letzten Test nicht erreichbar' />
-  }
-}
-
-class ResponsiveField extends Component {
-  render() {
-    if (this.props.data.value) {
-      return <CriteriumField keyProp='responsive' type='positive' title='Die Site ist offenbar auf mobilen Endgeräten nutzbar' />
-    }
-    return <CriteriumField keyProp='responsive' type='negative' title='Die Site scheint mobile Endgeräte nicht zu unterstützen' />
-  }
-}
-
 class ScoreField extends Component {
   render() {
     return <td key='score'>{ this.props.score }</td>;
-  }
-}
-
-class ScreenshotsField extends Component {
-  render() {
-    var screenshotElements = [];
-    var baseURL = 'http://green-spider-screenshots.sendung.de';
-
-
-    if (this.props.screenshot !== null && typeof this.props.screenshot !== 'undefined') {
-      var mobileScreenshot = baseURL + '/360x640/' + this.props.screenshot;
-      var desktopScreenshot = baseURL + '/1500x1500/' + this.props.screenshot;
-      screenshotElements.push(<a key='mobile' className='screenshot tt' href={mobileScreenshot} target='_blank' title='Screenshot für Smartphone-Ansicht anzeigen'><i className='icon ion-md-phone-portrait'></i></a>);
-      screenshotElements.push(<a key='desktop' className="screenshot tt" href={desktopScreenshot} target='_blank' title='Screenshot für Desktop-Ansicht anzeigen'><i className='icon ion-md-desktop'></i></a>);
-    }
-
-    return <td key='screenshot'>{ screenshotElements }</td>;
   }
 }
 
@@ -302,39 +160,6 @@ class URLField extends Component {
   }
 }
 
-class WWWOptionalField extends Component {
-  render() {
-    if (this.props.data.value) {
-      return <CriteriumField keyProp='wwwoptional' type='positive' title='Die Site ist sowohl mit als auch ohne www. in der URL aufrufbar' />;
-    }
-    return <CriteriumField keyProp='wwwoptional' type='negative' title='Die Site ist nicht sowohl mit als auch ohne www. in der URL aufrufbar' />;
-  }
-}
-
-class ScriptErrorsField extends Component {
-  render() {
-    if (typeof this.props.data !== 'undefined') {
-      if (this.props.data.value) {
-        return <CriteriumField keyProp='noscripterrors' type='positive' title='Es wurden keine JavaScript-Fehler festgestellt' />;
-      }
-      return <CriteriumField keyProp='noscripterrors' type='negative' title='Auf der Seite wurden JavaScript-Fehler gefunden' />;
-    }
-    return <td key='noscripterrors'></td>;
-  }
-}
-
-class NetworkErrorsField extends Component {
-  render() {
-    if (typeof this.props.data !== 'undefined') {
-      if (this.props.data.value) {
-        return <CriteriumField keyProp='nonetworkerrors' type='positive' title='Es wurden keine Probleme beim Laden verknüpfter Ressourcen festgestellt' />;
-      }
-      return <CriteriumField keyProp='nonetworkerrors' type='negative' title='Beim Laden verknüpfter Ressourcen sind Fehler aufgetreten' />;
-    }
-    return <td key='nonetworkerrors'></td>;
-  }
-}
-
 
 class ResultsTable extends Component {
   render() {
@@ -346,14 +171,6 @@ class ResultsTable extends Component {
     var rows = [];
     this.props.results.forEach((element, index) => {
 
-      var screenshots;
-      if (typeof element.resulting_urls !== 'undefined' &&
-          element.resulting_urls !== null &&
-          typeof this.props.screenshots[element.resulting_urls[0]] !== 'undefined' &&
-          this.props.screenshots[element.resulting_urls[0]] !== null) {
-        screenshots = this.props.screenshots[element.resulting_urls[0]];
-      }
-
       var fields = [
         <TypeField key={'tf'+index} level={element.meta.level} type={element.meta.type} />,
         <StateField key={'sf'+index} state={element.meta.state} />,
@@ -361,19 +178,11 @@ class ResultsTable extends Component {
         <CityField key={'cf'+index} city={element.meta.city} />,
         <URLField key={'uf'+index} inputURL={element.input_url} canonicalURLs={element.resulting_urls} />,
         <ScoreField key={'scf'+index} score={element.score} />,
-        <ReachableField key={'rf'+index} data={element.rating.SITE_REACHABLE} />,
-        <ResponseDurationField key={'rdf'+index} data={element.rating.HTTP_RESPONSE_DURATION} />,
-        <FaviconField key={'fif'+index} data={element.rating.FAVICON} icons={element.icons} />,
-        <HTTPSField key={'htpsf'+index} data={element.rating.HTTPS} />,
-        <WWWOptionalField key={'wwwof'+index} data={element.rating.WWW_OPTIONAL} />,
-        <CanonicalURLField key={'curlf'+index} data={element.rating.CANONICAL_URL} />,
-        <ResponsiveField key={'rspf'+index} data={element.rating.RESPONSIVE} />,
-        <FontField key={'font'+index} data={element.rating.USE_SPECIFIC_FONTS} />,
-        <FeedField key={'ff'+index} data={element.rating.FEEDS} />,
-        <ScriptErrorsField key={'se'+index} data={element.rating.NO_SCRIPT_ERRORS} />,
-        <NetworkErrorsField key={'ne'+index} data={element.rating.NO_NETWORK_ERRORS} />,
-        <ScreenshotsField key={'ssf'+index} screenshot={screenshots} />,
-        <CMSField key={'cmsf'+index} cms={element.cms} />,
+        (
+          <td key={'link-'+index}>
+            <Link to={`/sites/${ encodeURIComponent(element.input_url) }`}>Details</Link>
+          </td>
+        ),
       ];
 
       rows.push(<tr key={element.input_url}>{ fields }</tr>)
@@ -389,19 +198,7 @@ class ResultsTable extends Component {
             <th scope='col'>Stadt</th>
             <th scope='col'>URL</th>
             <th scope='col'>Score</th>
-            <th scope='col'>Erreichbar</th>
-            <th scope='col'>Antwortzeit</th>
-            <th scope='col'>Icon</th>
-            <th scope='col'>HTTPS</th>
-            <th scope='col'>www. optional</th>
-            <th scope='col'>Kanonische URL</th>
-            <th scope='col'>Responsive</th>
-            <th scope='col'>Arvo</th>
-            <th scope='col'>Feed</th>
-            <th scope='col'>Script-Fehler</th>
-            <th scope='col'>Netzwerk-Fehler</th>
-            <th scope='col'>Screenshots</th>
-            <th scope='col'>CMS</th>
+            <th scope='col'>Link</th>
           </tr>
         </thead>
         <tbody>{ rows }</tbody>
