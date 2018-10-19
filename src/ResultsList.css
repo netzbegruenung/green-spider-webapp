@@ -1,0 +1,21 @@
+.TypeField {
+  font-size: 0.8em;
+  font-weight: 700;
+}
+
+.ResultsList {
+  padding: 3px 0px;
+  margin: 6px 0px;
+}
+
+.ScoreField {
+  border-radius: 3px;
+  background-color: #ccc;
+  padding: 6px 8px;
+  display: inline-block;
+  width: 3.5em;
+  text-align: center;
+  font-family: 'Arvo Gruen', 'Arvo', sans-serif;
+  font-size: 120%;
+  color: #333;
+}

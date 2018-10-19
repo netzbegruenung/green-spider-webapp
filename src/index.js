@@ -6,12 +6,12 @@ import './index.css';
 import results from './spider_result_compact.json';
 import screenshots from './screenshots.json';
 import StatusInfo from './StatusInfo';
-import ResultsTable from './ResultsTable';
+import ResultsList from './ResultsList';
 import SiteDetailsPage from './SiteDetailsPage';
 import registerServiceWorker from './registerServiceWorker';
 
 const Home = () => (
-  <ResultsTable results={results} />
+  <ResultsList results={results} />
 );
 
 const SiteDetails = ({ match }) => (
@@ -20,9 +20,11 @@ const SiteDetails = ({ match }) => (
 
 const AppMainContent = () => (
   <Router>
-    <div>
-      <Route exact path="/" component={Home} />
-      <Route path="/sites/:siteId" component={SiteDetails} />
+    <div className='row'>
+      <div className='col-12'>
+        <Route exact path="/" component={Home} />
+        <Route path="/sites/:siteId" component={SiteDetails} />
+      </div>
     </div>
   </Router>
 );
