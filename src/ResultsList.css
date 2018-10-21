@@ -1,11 +1,17 @@
 .TypeField {
   font-size: 0.8em;
   font-weight: 700;
+  text-decoration-line: none;
+  color: #333;
 }
 
 .ResultsList {
   padding: 3px 0px;
   margin: 6px 0px;
+}
+
+.ResultList:hover {
+  background-color: #ccc;
 }
 
 .ScoreField {
@@ -18,4 +24,15 @@
   font-family: 'Arvo Gruen', 'Arvo', sans-serif;
   font-size: 120%;
   color: #333;
+}
+
+.LocationLabel {
+  display: block;
+  color: #666;
+}
+
+.URLField {
+  display: block;
+  font-size: 90%;
+  color: #999;
 }

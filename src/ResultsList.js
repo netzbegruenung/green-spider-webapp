@@ -178,21 +178,17 @@ class ResultsList extends Component {
     this.props.results.forEach((element, index) => {
 
       var row = (
-        <div className='ResultsList row' key={element.input_url}>
-          <div className='col-12'>
-            <Link to={`/sites/${ encodeURIComponent(element.input_url) }`}>
-              <div className='row'>
-                <div className='col-9'>
-                  <LocationLabel level={element.meta.level} type={element.meta.type} district={element.meta.district} city={element.meta.city} state={element.meta.state} />
-                </div>
-                <div className='col-3'>
-                  <ScoreField score={element.score} maxScore={13} />
-                </div>
-              </div>
-              <URLField key={'uf'+index} inputURL={element.input_url} canonicalURLs={element.resulting_urls} />
-            </Link>
+        <Link key={element.input_url} to={`/sites/${ encodeURIComponent(element.input_url) }`}>
+          <div className='ResultsList row'>
+            <div className='col-9'>
+              <LocationLabel level={element.meta.level} type={element.meta.type} district={element.meta.district} city={element.meta.city} state={element.meta.state} />
+              <URLField inputURL={element.input_url} canonicalURLs={element.resulting_urls} />
+            </div>
+            <div className='col-3'>
+              <ScoreField score={element.score} maxScore={13} />
+            </div>
           </div>
-        </div>
+        </Link>
       );
 
       rows.push(row);
