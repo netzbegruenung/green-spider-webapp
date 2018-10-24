@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Link } from "react-router-dom";
+import punycode from 'punycode';
+import LocationLabel from './LocationLabel';
 import './SiteDetailsPage.css';
 
 class IconGood extends Component {
@@ -33,9 +34,27 @@ class CanonicalURLField extends Component {
   }
 }
 
-class CMSField extends Component {
+class CMSInfo extends Component {
   render() {
-    return <div>CMS: { this.props.cms }</div>;
+    var wellknownCMS = {
+      'typo3': <a href='https://typo3.org/' target='_blank' rel='noopener noreferrer'>Typo3</a>,
+      'typo3-gcms': <a href='https://gruenes-cms.de/' target='_blank' rel='noopener noreferrer'>Grünes CMS (Typo3)</a>,
+      'typo3-gruene': <a href='https://typo3-gruene.de/' target='_blank' rel='noopener noreferrer'>Typo3 Grüne</a>,
+      'wordpress': <a href='https://wordpress.org/' target='_blank' rel='noopener noreferrer'>Wordpress</a>,
+      'wordpress-urwahl': <a href='https://www.urwahl3000.de/' target='_blank' rel='noopener noreferrer'>Wordpress mit Urwahl3000</a>,
+      'wordpress-josephknowsbest': <a href='https://github.com/kre8tiv/Joseph-knows-best' target='_blank' rel='noopener noreferrer'>Wordpress mit Joseph Knows Best</a>,
+    };
+
+    if (typeof this.props.cms !== 'undefined' && this.props.cms.length > 0 && this.props.cms[0]) {
+
+      var label = this.props.cms[0];
+      if (typeof wellknownCMS[label] !== 'undefined') {
+        label = wellknownCMS[label];
+      }
+
+      return <p className='CMSInfo'>Die Site wird erstellt mit { label }</p>;
+    }
+    return <span />;
   }
 }
 
@@ -50,11 +69,7 @@ class FaviconField extends Component {
     if (this.props.data.value) {
       // icon is available for display
       if (icons.length) {
-        return (
-          <div className='good'>
-            Site Icon: <img src={'/siteicons/' + icons[0]} width={32} height={32} alt='Icon' />
-          </div>
-        );
+        return <CriteriumField keyProp='favicon' type='positive' title='Die Site verwendet das oben gezeigte Icon' />;
       }
       return <CriteriumField keyProp='favicon' type='positive' title='Die Site hat ein Icon, das jedoch nicht herunter geladen werden konnte.' />;
     }
@@ -94,6 +109,7 @@ class HTTPSField extends Component {
 
 class ResponseDurationField extends Component {
   render() {
+    var icon = <i className='icon ion-md-speedometer'></i>;
     var className = 'bad text';
     if (this.props.data.score > 0) {
       className = 'mediocre text';
@@ -103,7 +119,7 @@ class ResponseDurationField extends Component {
     }
 
     if (this.props.data.value) {
-      return <div className={className}>Server Antwortzeit: { this.props.data.value } ms</div>;
+      return <div className={className}>{icon} Server Antwortzeit: { this.props.data.value } ms</div>;
     }
     return <CriteriumField keyProp='duration' type='negative' title='Server Antwortzeit: Keine Angabe' />
   }
@@ -128,23 +144,48 @@ class ResponsiveField extends Component {
 }
 
 
-class ScreenshotsField extends Component {
+class Screenshots extends Component {
   render() {
-    var screenshotElements = [];
     var baseURL = 'http://green-spider-screenshots.sendung.de';
 
-
+    
     if (this.props.screenshot !== null && typeof this.props.screenshot !== 'undefined') {
       var mobileScreenshot = baseURL + '/360x640/' + this.props.screenshot;
       var desktopScreenshot = baseURL + '/1500x1500/' + this.props.screenshot;
-      screenshotElements.push(<a key='mobile' className='screenshot tt' href={mobileScreenshot} target='_blank' title='Screenshot für Smartphone-Ansicht anzeigen'><i className='icon ion-md-phone-portrait'></i></a>);
-      screenshotElements.push(<a key='desktop' className="screenshot tt" href={desktopScreenshot} target='_blank' title='Screenshot für Desktop-Ansicht anzeigen'><i className='icon ion-md-desktop'></i></a>);
+      
+      var mobile = <a className='screenshot' href={mobileScreenshot} target='_blank' title='Screenshot für Smartphone-Ansicht anzeigen'>
+        <img className='screenshot' src={mobileScreenshot} width='100%' alt='Mobile Screenshot' />
+      </a>;
+
+      var desktop = <a className='screenshot' href={desktopScreenshot} target='_blank' title='Screenshot für Desktop-Ansicht anzeigen'>
+        <img className='screenshot' src={desktopScreenshot} width='100%' alt='Desktop Screenshot' />
+      </a>;
+
+      return (<div className='row d-flex align-items-stretch'>
+        <div className='col-3'>{mobile}</div>
+        <div className='col-9'>{desktop}</div>
+      </div>);
     }
 
-    return <div>Screenshots: { screenshotElements[0] } { screenshotElements[1] }</div>;
+    return <div>Aktuell sind keine Screenshots vorhanden</div>;
   }
 }
 
+class SiteIcon extends Component {
+  render() {
+    var icons = [];
+    if (typeof this.props.icons !== 'undefined') {
+      icons = Object.values(this.props.icons);
+    } else {
+      return <span />;
+    }
+    
+    if (icons.length > 0) {
+      return <img className='SiteIcon' src={'/siteicons/' + icons[0]} width={32} height={32} alt='Icon' />;
+    }
+    return <span />;
+  }
+}
 
 class WWWOptionalField extends Component {
   render() {
@@ -198,6 +239,10 @@ class SiteDetailsPage extends Component {
     };
   }
 
+  componentDidMount() {
+    window.scrollTo(0, 0);
+  }
+
   render() {
     var screenshots;
     if (typeof this.state !== 'undefined' && typeof this.state.site !== 'undefined') {
@@ -209,23 +254,28 @@ class SiteDetailsPage extends Component {
       }
     }
 
-    var backlink = (
-      <div className='backlink'>
-        <Link to='/'>Zurück</Link>
-      </div>);
-
     if (typeof this.state !== 'undefined') {
       return (
         <div className='SiteDetailsPage'>
-          {backlink}
+          <h1>
+            <LocationLabel brief={false} level={this.state.site.meta.level} 
+                         type={this.state.site.meta.type} 
+                         district={this.state.site.meta.district}
+                         city={this.state.site.meta.city}
+                         state={this.state.site.meta.state} />
+          </h1>
 
-          <h1>{ this.state.site.meta.level }</h1>
+          <p><SiteIcon icons={this.state.site.icons} /> <a href={ this.state.url } rel='noopener noreferrer' target='_blank'>{ punycode.toUnicode(this.state.url) }</a></p>
+          
+          <CMSInfo cms={this.state.site.cms} />
 
-          <p><a href={ this.state.url } rel='noopener noreferrer'>{ this.state.url }</a></p>
+          <hr />
+          <Screenshots screenshot={screenshots} />
+
+          <hr />
 
           <CanonicalURLField data={this.state.site.rating.CANONICAL_URL} />
           <ReachableField data={this.state.site.rating.SITE_REACHABLE} />
-          <ResponseDurationField data={this.state.site.rating.HTTP_RESPONSE_DURATION} />
           <FaviconField data={this.state.site.rating.FAVICON} icons={this.state.site.icons} />
           <HTTPSField data={this.state.site.rating.HTTPS} />
           <WWWOptionalField data={this.state.site.rating.WWW_OPTIONAL} />
@@ -235,16 +285,13 @@ class SiteDetailsPage extends Component {
           <FeedField data={this.state.site.rating.FEEDS} />
           <ScriptErrorsField data={this.state.site.rating.NO_SCRIPT_ERRORS} />
           <NetworkErrorsField data={this.state.site.rating.NO_NETWORK_ERRORS} />
-          <ScreenshotsField screenshot={screenshots} />
-          <CMSField cms={this.state.site.cms} />
+          <ResponseDurationField data={this.state.site.rating.HTTP_RESPONSE_DURATION} />
 
         </div>
       )
     } else {
       return (
         <div className='SiteDetailsPage'>
-          {backlink}
-
           <h1>{ this.url }</h1>
 
           <p>Daten werden geladen...</p>

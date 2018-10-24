@@ -10,3 +10,14 @@
   color: #46962b;
   font-size: 1rem;
 }
+.SiteDetailsPage h1 {
+  margin-top: 2rem;
+  font-family: 'Arvo', sans-serif;
+}
+
+.SiteDetailsPage {
+  margin-bottom: 3rem;
+}
+.SiteIcon {
+  margin-right: 0.6rem;
+}

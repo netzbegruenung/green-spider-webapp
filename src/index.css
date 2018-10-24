@@ -4,7 +4,7 @@ body {
   font-family: sans-serif;
 }
 
-h5 {
+h5 a {
   font-family: 'Arvo Gruen', sans-serif;
   font-weight: bold;
   color: #ffee00;
@@ -20,8 +20,8 @@ h5 {
   height: 32px;
   font-size: 24px;
 }
-.screenshot .icon {
-  color: #212529;
+.screenshot {
+  border: 1px solid #ccc;
 }
 
 .siteicon {
@@ -29,4 +29,8 @@ h5 {
   max-height: 32px;
   width: auto;
   height: auto;
+}
+
+abbr[title], abbr[data-original-title] {
+  text-decoration: none;
 }

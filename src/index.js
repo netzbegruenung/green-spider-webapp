@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { HashRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import '../node_modules/bootstrap/dist/css/bootstrap.css';
 import './index.css';
 import results from './spider_result_compact.json';
@@ -21,10 +21,12 @@ const SiteDetails = ({ match }) => (
 const AppMainContent = () => (
   <Router>
     <div className='row'>
-      <div className='col-12'>
+    <div className='col-lg'></div>
+      <div className='col-lg-8 col-sm-12'>
         <Route exact path="/" component={Home} />
         <Route path="/sites/:siteId" component={SiteDetails} />
       </div>
+      <div className='col-lg'></div>
     </div>
   </Router>
 );
