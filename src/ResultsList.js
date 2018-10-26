@@ -5,18 +5,10 @@
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
 import LocationLabel from './LocationLabel';
+import ScoreField from './ScoreField';
 import './ResultsList.css';
 import punycode from 'punycode';
-import chroma from 'chroma-js';
 
-
-class ScoreField extends Component {
-  render() {
-    var ratio = this.props.score / this.props.maxScore;
-    var bg = chroma.mix('#8D5335', '#75B66B', ratio);
-    return <span className='ScoreField align-self-center' style={{backgroundColor: bg.hex()}}>{ this.props.score }</span>;
-  }
-}
 
 class URLField extends Component {
   displayURL(url) {
@@ -38,6 +30,12 @@ class ResultsList extends Component {
   render() {
     // sort results by score (descending)
     this.props.results.sort((a, b) => {
+      // if score is the same, use response time as tie breaker
+      if (a.score === b.score && 
+        typeof a.rating.HTTP_RESPONSE_DURATION.value === 'number' &&
+        typeof b.rating.HTTP_RESPONSE_DURATION.value === 'number') {
+        return a.rating.HTTP_RESPONSE_DURATION.value - b.rating.HTTP_RESPONSE_DURATION.value;
+      }
       return b.score - a.score;
     });
 

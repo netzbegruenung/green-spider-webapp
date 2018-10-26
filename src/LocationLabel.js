@@ -139,3 +139,4 @@ class LocationLabel extends Component {
 }
 
 export default LocationLabel;
+export { TypeField, StateField };

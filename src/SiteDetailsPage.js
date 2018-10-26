@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import punycode from 'punycode';
 import LocationLabel from './LocationLabel';
+import ScoreField from './ScoreField';
+import { TypeField, StateField } from './LocationLabel';
 import './SiteDetailsPage.css';
 
 class IconGood extends Component {
@@ -52,7 +54,7 @@ class CMSInfo extends Component {
         label = wellknownCMS[label];
       }
 
-      return <p className='CMSInfo'>Die Site wird erstellt mit { label }</p>;
+      return <span className='CMSInfo'>Die Site wird erstellt mit { label }</span>;
     }
     return <span />;
   }
@@ -220,6 +222,65 @@ class NetworkErrorsField extends Component {
   }
 }
 
+class ScoreComparisonWidget extends Component {
+  calculateIndizes() {
+    var countAll = 0;
+    var countType = 0;
+    var countState = 0;
+    var indexAll = 0;
+    var indexSiteType = 0;
+    var indexState = 0;
+    for (var site of this.props.allSites) {
+      countAll++;
+
+      if (site.meta.type === this.props.thisSite.meta.type && site.meta.level === this.props.thisSite.meta.level) {
+        countType++;
+      }
+      if (site.meta.state === this.props.thisSite.meta.state) {
+        countState++;
+      }
+
+      if (site.score < this.props.thisSite.score) {
+        indexAll++;
+        if (site.meta.type === this.props.thisSite.meta.type && site.meta.level === this.props.thisSite.meta.level) {
+          indexSiteType++;
+        }
+        if (site.meta.state === this.props.thisSite.meta.state) {
+          indexState++;
+        }
+      }
+    }
+
+    indexAll = indexAll / countAll;
+    indexSiteType = indexSiteType / countType;
+    indexState = indexState / countState;
+
+    return {
+      all: indexAll,
+      siteType: indexSiteType,
+      state: indexState
+    }
+  }
+
+  render() {
+    var index = this.calculateIndizes();
+
+    return (
+      <div className='row d-flex'>
+        <div className='col-4 align-self-center'>
+          Punkte: <ScoreField score={this.props.thisSite.score} maxScore={this.props.maxScore} />
+        </div>
+        <div className='col-8 align-self-center'>
+          <div>Besser als { Math.round(index.all * 100) }% aller Sites</div>
+          <div>Besser als { Math.round(index.siteType * 100) }% aller <TypeField level={this.props.thisSite.meta.level} type={this.props.thisSite.meta.type} />-Sites</div>
+          <div>Besser als { Math.round(index.state * 100) }% aller Sites in <StateField state={this.props.thisSite.meta.state} /></div>
+        </div>
+      </div>
+    );
+  }
+}
+
+
 class SiteDetailsPage extends Component {
   constructor(props) {
     super(props);
@@ -266,11 +327,22 @@ class SiteDetailsPage extends Component {
           </h1>
 
           <p><SiteIcon icons={this.state.site.icons} /> <a href={ this.state.url } rel='noopener noreferrer' target='_blank'>{ punycode.toUnicode(this.state.url) }</a></p>
-          
-          <CMSInfo cms={this.state.site.cms} />
 
           <hr />
+
+          <ScoreComparisonWidget allSites={this.props.sites} thisSite={this.state.site} maxScore={13} />
+
+          <hr />
+          
           <Screenshots screenshot={screenshots} />
+
+          <hr />
+
+          <div className='row'>
+            <div className='col'>
+              <CMSInfo cms={this.state.site.cms} />
+            </div>
+          </div>
 
           <hr />
 
