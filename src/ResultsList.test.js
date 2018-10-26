@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import ResultsTable from './ResultsTable';
+import { BrowserRouter as Router } from "react-router-dom";
+import ResultsList from './ResultsList';
 
 const results = [
   {
@@ -299,6 +300,6 @@ const screenshots = {
 
 it('renders without crashing', () => {
   const div = document.createElement('div');
-  ReactDOM.render(<ResultsTable results={results} screenshots={screenshots}/>, div);
+  ReactDOM.render(<Router><ResultsList results={results} screenshots={screenshots}/></Router>, div);
   ReactDOM.unmountComponentAtNode(div);
 });
