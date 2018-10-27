@@ -31,3 +31,6 @@ export:
 		--credentials-path /secrets/datastore-reader.json \
 		--loglevel info \
 		export --kind spider-results
+
+docker-build:
+	docker build -t quay.io/netzbegruenung/green-spider-webapp:latest .

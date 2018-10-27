@@ -29,7 +29,7 @@ class StatusInfo extends Component {
   render() {
     if (this.props.results) {
       return (
-        <span>Stand <span>{this.state.minDate.toLocaleDateString("de-DE")}</span> bis <span>{this.state.maxDate.toLocaleDateString("de-DE")}</span></span>
+        <span>Stand <span>{this.state.maxDate.toLocaleDateString("de-DE")}</span></span>
       );
     }
     return <span>Nicht geladen</span>

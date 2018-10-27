@@ -1,0 +1,32 @@
+.TypeField {
+  font-size: 85%;
+  font-weight: 700;
+  text-decoration-line: none;
+  color: #333;
+}
+
+.ResultsList {
+  font-size: 1.3rem;
+  padding: 0.2rem 0;
+  margin: 0.3rem 0;
+  border-radius: 0.3rem;
+}
+
+div.ResultsList:hover {
+  background-color: #eee;
+}
+
+a.ResultsList:hover {
+  text-decoration: none;
+}
+
+.LocationLabel {
+  display: block;
+  color: #666;
+}
+
+.URLField {
+  display: block;
+  font-size: 90%;
+  color: #999;
+}

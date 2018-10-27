@@ -1,0 +1,11 @@
+.ScoreField {
+  border-radius: 3px;
+  background-color: #ccc;
+  padding: 6px 8px;
+  display: inline-block;
+  width: 5em;
+  text-align: center;
+  font-family: 'Arvo Gruen', 'Arvo', sans-serif;
+  font-size: 120%;
+  color: #333;
+}
