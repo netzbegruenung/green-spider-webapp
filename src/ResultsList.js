@@ -27,9 +27,11 @@ class SearchField extends Component {
   componentDidMount() {
     // init search from URL
     let params = (new URL(document.location)).searchParams;
-    let q = params.get('q');
-    if (q !== null && q !== '') {
-      this.doSearch(q);
+    if (typeof params === 'object') {
+      let q = params.get('q');
+      if (q !== null && q !== '') {
+        this.doSearch(q);
+      }
     }
   }
 
