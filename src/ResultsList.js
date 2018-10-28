@@ -8,6 +8,7 @@ import LocationLabel from './LocationLabel';
 import ScoreField from './ScoreField';
 import './ResultsList.css';
 import punycode from 'punycode';
+import history from './history';
 
 class SearchField extends Component {
   constructor(props) {
@@ -20,11 +21,27 @@ class SearchField extends Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.doSearch = this.doSearch.bind(this);
   }
 
-  handleChange(event) {
+  componentDidMount() {
+    // init search from URL
+    let params = (new URL(document.location)).searchParams;
+    let q = params.get('q');
+    if (q !== null && q !== '') {
+      this.doSearch(q);
+    }
+  }
+
+  doSearch(q) {
     var minTermLength = 1;
-    var q = event.target.value;
+    
+    if (q === '') {
+      history.push(`/`);
+    } else {
+      history.push(`/?q=${q}`);
+    }
+
     this.setState({value: q});
 
     if (q.length > minTermLength && q !== this.state.lastQuery) {
@@ -43,13 +60,18 @@ class SearchField extends Component {
     }
   }
 
+  handleChange(event) {
+    var q = event.target.value;
+    this.doSearch(q);
+  }
+
   handleSubmit(event) {
     console.log('A name was submitted:', this.state.value);
     event.preventDefault();
   }
 
   render() {
-    var hitsInfo = <span />;
+    var hitsInfo = <span>&nbsp;</span>;
     if (this.state.lastQuery !== '') {
       hitsInfo = <span>{this.state.hits} Treffer</span>;
     }
@@ -133,7 +155,7 @@ class ResultsList extends Component {
     }
 
     var placeholder = (
-      <div className='row placeholder'>
+      <div className='row placeholder' key='placeholder'>
         <div className='col-12 text-center'>
           Vergleiche Deine GRÜNE Website mit {this.props.results.length} anderen und erfahre, was Du verbessern kannst.
         </div>
@@ -141,7 +163,7 @@ class ResultsList extends Component {
     );
 
     var improve = (
-      <div className='row improve'>
+      <div className='row improve' key='improve'>
         <div className='col-12 text-center'>
           GREEN SPIDER ist freie Software. <a href='https://github.com/netzbegruenung/green-spider/'>Hilf mit, sie zu verbessern!</a>
         </div>
@@ -150,7 +172,7 @@ class ResultsList extends Component {
 
     var noresult = [placeholder, improve];
     var resultFound = (
-      <div className='row'>
+      <div className='row results'>
           <div className='col-12'>
             {rows}
           </div>

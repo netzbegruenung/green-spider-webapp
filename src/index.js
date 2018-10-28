@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { Router, Route } from "react-router-dom";
 import '../node_modules/bootstrap/dist/css/bootstrap.css';
 import './index.css';
 import sitesData from './spider_result_compact.json';
@@ -10,6 +10,7 @@ import ResultsList from './ResultsList';
 import SiteDetailsPage from './SiteDetailsPage';
 import registerServiceWorker from './registerServiceWorker';
 import lunr from 'lunr';
+import history from './history'
 
 let searchIndex = lunr(function() {
   this.field('url');
@@ -37,7 +38,7 @@ const SiteDetails = ({ match }) => (
 );
 
 const AppMainContent = () => (
-  <Router>
+  <Router history={history}>
     <div className='row'>
       <div className='col-lg'></div>
       <div className='col-lg-8 col-sm-12'>
