@@ -346,12 +346,11 @@ class SiteDetailsPage extends Component {
 
           <hr />
 
-          <CanonicalURLField data={this.state.site.rating.CANONICAL_URL} />
           <ReachableField data={this.state.site.rating.SITE_REACHABLE} />
-          <FaviconField data={this.state.site.rating.FAVICON} icons={this.state.site.icons} />
+          <CanonicalURLField data={this.state.site.rating.CANONICAL_URL} />
           <HTTPSField data={this.state.site.rating.HTTPS} />
           <WWWOptionalField data={this.state.site.rating.WWW_OPTIONAL} />
-          <CanonicalURLField data={this.state.site.rating.CANONICAL_URL} />
+          <FaviconField data={this.state.site.rating.FAVICON} icons={this.state.site.icons} />
           <ResponsiveField data={this.state.site.rating.RESPONSIVE} />
           <FontField data={this.state.site.rating.USE_SPECIFIC_FONTS} />
           <FeedField data={this.state.site.rating.FEEDS} />
