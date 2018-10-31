@@ -22,3 +22,4 @@ yarn-error.log*
 
 # secret key we never want to share
 /secrets
+/test-certs
