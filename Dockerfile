@@ -14,4 +14,3 @@ RUN yarn build
 
 FROM nginx:1.14-alpine
 COPY --from=builder /build /usr/share/nginx/html
-COPY config/nginx.conf /etc/nginx/nginx.conf
