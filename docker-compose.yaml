@@ -1,0 +1,21 @@
+version: "3"
+services:
+  
+  webapp:
+    image: quay.io/netzbegruenung/green-spider-webapp:latest
+    build: .
+    ports:
+    - "80:8000"
+    - "443:443"
+    volumes:
+      - "./config/nginx:/etc/nginx/"
+      - "./test-certs:/etc/letsencrypt/live/green-spider.netzbegruenung.de"
+  
+  api:
+    image: quay.io/netzbegruenung/green-spider-api:latest
+    ports:
+    - 5000:5000
+    environment:
+      GCLOUD_DATASTORE_CREDENTIALS_PATH: /secrets/datastore-reader.json
+    volumes:
+      - "./secrets:/secrets"
