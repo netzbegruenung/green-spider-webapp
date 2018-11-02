@@ -49,6 +49,7 @@ class SiteDetailsPage extends Component {
     }
 
     if (this.state.site !== null) {
+      console.log(this.state.site);
       return (
         <div className='SiteDetailsPage'>
           <h1>
@@ -59,7 +60,7 @@ class SiteDetailsPage extends Component {
                          state={this.state.site.meta.state} />
           </h1>
 
-          <p><SiteIcon icons={this.state.site.icons} /> <a href={ this.state.url } rel='noopener noreferrer' target='_blank'>{ punycode.toUnicode(this.state.url) }</a></p>
+          <p><SiteIcon site={this.state.site} /> <a href={ this.state.url } rel='noopener noreferrer' target='_blank'>{ punycode.toUnicode(this.state.url) }</a></p>
 
           <hr />
 
@@ -73,7 +74,7 @@ class SiteDetailsPage extends Component {
 
           <div className='row'>
             <div className='col'>
-              <CMSInfo cms={this.state.site.cms} />
+              <CMSInfo site={this.state.site} />
             </div>
           </div>
 
@@ -83,7 +84,7 @@ class SiteDetailsPage extends Component {
           <CanonicalURLField data={this.state.site.rating.CANONICAL_URL} />
           <HTTPSField data={this.state.site.rating.HTTPS} />
           <WWWOptionalField data={this.state.site.rating.WWW_OPTIONAL} />
-          <FaviconField data={this.state.site.rating.FAVICON} icons={this.state.site.icons} />
+          <FaviconField data={this.state.site.rating.FAVICON} />
           <ResponsiveField data={this.state.site.rating.RESPONSIVE} />
           <FontField data={this.state.site.rating.USE_SPECIFIC_FONTS} />
           <FeedField data={this.state.site.rating.FEEDS} />
@@ -148,33 +149,29 @@ class CMSInfo extends Component {
       'wordpress-josephknowsbest': <a href='https://github.com/kre8tiv/Joseph-knows-best' target='_blank' rel='noopener noreferrer'>Wordpress mit Joseph Knows Best</a>,
     };
 
-    if (typeof this.props.cms !== 'undefined' && this.props.cms.length > 0 && this.props.cms[0]) {
-
-      var label = this.props.cms[0];
-      if (typeof wellknownCMS[label] !== 'undefined') {
-        label = wellknownCMS[label];
-      }
-
-      return <span className='CMSInfo'>Die Site wird erstellt mit { label }</span>;
+    if (typeof this.props.site === 'undefined' || this.props.site === null) {
+      return <span />;
     }
-    return <span />;
+    if (Object.keys(this.props.site.checks.generator).length === 0) {
+      return <span />;
+    }
+
+    var url = Object.keys(this.props.site.checks.generator)[0];
+    
+    var label = this.props.site.checks.generator[url];
+    if (typeof wellknownCMS[label] !== 'undefined') {
+      label = wellknownCMS[label];
+    }
+
+    return <span className='CMSInfo'>Die Site wird erstellt mit { label }</span>;
   }
 }
 
 
 class FaviconField extends Component {
   render() {
-    var icons = [];
-    if (typeof this.props.icons !== 'undefined') {
-      icons = Object.values(this.props.icons);
-    }
-
     if (this.props.data.value) {
-      // icon is available for display
-      if (icons.length) {
-        return <CriteriumField keyProp='favicon' type='positive' title='Die Site verwendet das oben gezeigte Icon' />;
-      }
-      return <CriteriumField keyProp='favicon' type='positive' title='Die Site hat ein Icon, das jedoch nicht herunter geladen werden konnte.' />;
+      return <CriteriumField keyProp='favicon' type='positive' title='Die Site hat ein Icon.' />;
     }
     return <CriteriumField keyProp='favicon' type='negative' title='Die Site hat kein Icon' />;
   }
@@ -283,16 +280,26 @@ class Screenshots extends Component {
 
 class SiteIcon extends Component {
   render() {
-    var icons = [];
-    if (typeof this.props.icons !== 'undefined') {
-      icons = Object.values(this.props.icons);
-    } else {
+    if (this.props.site === null) {
       return <span />;
     }
-    
-    if (icons.length > 0) {
-      return <img className='SiteIcon' src={'/siteicons/' + icons[0]} width={32} height={32} alt='Icon' />;
+
+    var src;
+    var url;
+    if (typeof this.props.site.checks.html_head === 'object') {
+      url = Object.keys(this.props.site.checks.html_head)[0];
     }
+
+    if (typeof this.props.site.checks.html_head[url].link_icon !== 'undefined' &&
+    this.props.site.checks.html_head[url].link_icon !== null &&
+    this.props.site.checks.html_head[url].link_icon !== '') {
+      src = this.props.site.checks.html_head[url].link_icon;
+    }
+    
+    if (src) {
+      return <img className='SiteIcon' src={src} width={32} height={32} alt='Icon' />;
+    }
+
     return <span />;
   }
 }
