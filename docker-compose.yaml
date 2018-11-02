@@ -1,15 +1,27 @@
 version: "3"
 services:
   
-  webapp:
-    image: quay.io/netzbegruenung/green-spider-webapp:latest
-    build: .
+  # proxy passing through webapp and api
+  proxy:
+    image: nginx:1.14-alpine
     ports:
-    - "80:8000"
-    - "443:443"
+      - "8000:8000"
     volumes:
-      - "./config/nginx:/etc/nginx/"
-      - "./test-certs:/etc/letsencrypt/live/green-spider.netzbegruenung.de"
+      - ${PWD}/config/nginx/nginx_dev.conf:/etc/nginx/nginx.conf
+
+  # The webapp dev server on port 3000
+  webapp:
+    image: green-spider-webapp:dev
+    build:
+      context: .
+      dockerfile: Dockerfile_node_dev
+    command: yarn start
+    ports:
+    - "3000:3000"
+    volumes:
+      - ".:/workdir"
+      #- "./config/nginx:/etc/nginx/"
+      #- "./test-certs:/etc/letsencrypt/live/green-spider.netzbegruenung.de"
   
   api:
     image: quay.io/netzbegruenung/green-spider-api:latest

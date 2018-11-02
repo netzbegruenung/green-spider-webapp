@@ -1,9 +1,110 @@
 import React, { Component } from 'react';
-import punycode from 'punycode';
 import LocationLabel from './LocationLabel';
 import ScoreField from './ScoreField';
 import { TypeField, StateField } from './LocationLabel';
 import './SiteDetailsPage.css';
+import axios from 'axios';
+import punycode from 'punycode';
+import screenshots from './screenshots.json';
+
+
+class SiteDetailsPage extends Component {
+  state = {
+    isLoading: true,
+    site: null,
+    url: null,
+  };
+
+  componentDidMount() {
+    // ensure that this view is opened at the top
+    // when coming from the SiteSearch
+    window.scrollTo(0, 0);
+
+    // load data
+    let url = this.props.match.match.params.siteId;
+
+    axios.get(`/api/v1/spider-results/site?url=${url}`)
+      .then((response) => {
+        // handle success
+        this.setState({
+          isLoading: false,
+          site: response.data,
+          url: decodeURIComponent(url),
+        });
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error);
+        this.setState({isLoading: false});
+      })
+      .then(() => {
+        // always executed
+      });
+  }
+
+  render() {
+    if (this.state.isLoading) {
+      // TODO: etwas schöner machen...
+      return <div></div>;
+    }
+
+    if (this.state.site !== null) {
+      return (
+        <div className='SiteDetailsPage'>
+          <h1>
+            <LocationLabel brief={false} level={this.state.site.meta.level} 
+                         type={this.state.site.meta.type} 
+                         district={this.state.site.meta.district}
+                         city={this.state.site.meta.city}
+                         state={this.state.site.meta.state} />
+          </h1>
+
+          <p><SiteIcon icons={this.state.site.icons} /> <a href={ this.state.url } rel='noopener noreferrer' target='_blank'>{ punycode.toUnicode(this.state.url) }</a></p>
+
+          <hr />
+
+          <ScoreComparisonWidget allSites={this.props.sitesHash} thisSite={this.state.site} maxScore={13} />
+
+          <hr />
+          
+          <Screenshots urls={this.state.site.checks.url_canonicalization} />
+
+          <hr />
+
+          <div className='row'>
+            <div className='col'>
+              <CMSInfo cms={this.state.site.cms} />
+            </div>
+          </div>
+
+          <hr />
+
+          <ReachableField data={this.state.site.rating.SITE_REACHABLE} />
+          <CanonicalURLField data={this.state.site.rating.CANONICAL_URL} />
+          <HTTPSField data={this.state.site.rating.HTTPS} />
+          <WWWOptionalField data={this.state.site.rating.WWW_OPTIONAL} />
+          <FaviconField data={this.state.site.rating.FAVICON} icons={this.state.site.icons} />
+          <ResponsiveField data={this.state.site.rating.RESPONSIVE} />
+          <FontField data={this.state.site.rating.USE_SPECIFIC_FONTS} />
+          <FeedField data={this.state.site.rating.FEEDS} />
+          <ScriptErrorsField data={this.state.site.rating.NO_SCRIPT_ERRORS} />
+          <NetworkErrorsField data={this.state.site.rating.NO_NETWORK_ERRORS} />
+          <ResponseDurationField data={this.state.site.rating.HTTP_RESPONSE_DURATION} />
+
+        </div>
+      )
+    } else {
+      return (
+        <div className='SiteDetailsPage'>
+          <h1>{ this.url }</h1>
+
+          <p>Daten werden geladen...</p>
+
+        </div>
+      )
+    }
+  }
+}
 
 class IconGood extends Component {
   render() {
@@ -150,10 +251,17 @@ class Screenshots extends Component {
   render() {
     var baseURL = 'http://green-spider-screenshots.sendung.de';
 
+    let pageScreenshot;
+    if (this.props.urls !== null && this.props.urls.length > 0) {
+      if (typeof screenshots[this.props.urls[0]] !== 'undefined' &&
+          screenshots[this.props.urls[0]] !== null) {
+            pageScreenshot = screenshots[this.props.urls[0]];
+      }
+    }
     
-    if (this.props.screenshot !== null && typeof this.props.screenshot !== 'undefined') {
-      var mobileScreenshot = baseURL + '/360x640/' + this.props.screenshot;
-      var desktopScreenshot = baseURL + '/1500x1500/' + this.props.screenshot;
+    if (pageScreenshot !== null) {
+      var mobileScreenshot = baseURL + '/360x640/' + pageScreenshot;
+      var desktopScreenshot = baseURL + '/1500x1500/' + pageScreenshot;
       
       var mobile = <a className='screenshot' href={mobileScreenshot} target='_blank' title='Screenshot für Smartphone-Ansicht anzeigen'>
         <img className='screenshot' src={mobileScreenshot} width='100%' alt='Mobile Screenshot' />
@@ -230,8 +338,10 @@ class ScoreComparisonWidget extends Component {
     var indexAll = 0;
     var indexSiteType = 0;
     var indexState = 0;
-    for (var site of this.props.allSites) {
+    for (var url of Object.keys(this.props.allSites)) {
       countAll++;
+
+      var site = this.props.allSites[url];
 
       if (site.meta.type === this.props.thisSite.meta.type && site.meta.level === this.props.thisSite.meta.level) {
         countType++;
@@ -263,6 +373,10 @@ class ScoreComparisonWidget extends Component {
   }
 
   render() {
+    if (this.props.allSites === null) {
+      return <div className='row d-flex'></div>;
+    }
+
     var index = this.calculateIndizes();
 
     return (
@@ -280,96 +394,4 @@ class ScoreComparisonWidget extends Component {
   }
 }
 
-
-class SiteDetailsPage extends Component {
-  constructor(props) {
-    super(props);
-
-    var url = decodeURIComponent(props.match.params.siteId);
-    var site = null;
-    // load data
-    props.sites.forEach((element) => {
-      if (element.input_url === url) {
-        site = element;
-      }
-    });
-
-    this.state = {
-      site: site,
-      url: url,
-    };
-  }
-
-  componentDidMount() {
-    window.scrollTo(0, 0);
-  }
-
-  render() {
-    var screenshots;
-    if (typeof this.state !== 'undefined' && typeof this.state.site !== 'undefined') {
-      if (typeof this.state.site.resulting_urls !== 'undefined' &&
-          this.state.site.resulting_urls !== null &&
-          typeof this.props.screenshots[this.state.site.resulting_urls[0]] !== 'undefined' &&
-          this.props.screenshots[this.state.site.resulting_urls[0]] !== null) {
-        screenshots = this.props.screenshots[this.state.site.resulting_urls[0]];
-      }
-    }
-
-    if (typeof this.state !== 'undefined') {
-      return (
-        <div className='SiteDetailsPage'>
-          <h1>
-            <LocationLabel brief={false} level={this.state.site.meta.level} 
-                         type={this.state.site.meta.type} 
-                         district={this.state.site.meta.district}
-                         city={this.state.site.meta.city}
-                         state={this.state.site.meta.state} />
-          </h1>
-
-          <p><SiteIcon icons={this.state.site.icons} /> <a href={ this.state.url } rel='noopener noreferrer' target='_blank'>{ punycode.toUnicode(this.state.url) }</a></p>
-
-          <hr />
-
-          <ScoreComparisonWidget allSites={this.props.sites} thisSite={this.state.site} maxScore={13} />
-
-          <hr />
-          
-          <Screenshots screenshot={screenshots} />
-
-          <hr />
-
-          <div className='row'>
-            <div className='col'>
-              <CMSInfo cms={this.state.site.cms} />
-            </div>
-          </div>
-
-          <hr />
-
-          <ReachableField data={this.state.site.rating.SITE_REACHABLE} />
-          <CanonicalURLField data={this.state.site.rating.CANONICAL_URL} />
-          <HTTPSField data={this.state.site.rating.HTTPS} />
-          <WWWOptionalField data={this.state.site.rating.WWW_OPTIONAL} />
-          <FaviconField data={this.state.site.rating.FAVICON} icons={this.state.site.icons} />
-          <ResponsiveField data={this.state.site.rating.RESPONSIVE} />
-          <FontField data={this.state.site.rating.USE_SPECIFIC_FONTS} />
-          <FeedField data={this.state.site.rating.FEEDS} />
-          <ScriptErrorsField data={this.state.site.rating.NO_SCRIPT_ERRORS} />
-          <NetworkErrorsField data={this.state.site.rating.NO_NETWORK_ERRORS} />
-          <ResponseDurationField data={this.state.site.rating.HTTP_RESPONSE_DURATION} />
-
-        </div>
-      )
-    } else {
-      return (
-        <div className='SiteDetailsPage'>
-          <h1>{ this.url }</h1>
-
-          <p>Daten werden geladen...</p>
-
-        </div>
-      )
-    }
-  }
-}
 export default SiteDetailsPage;

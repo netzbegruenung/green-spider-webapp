@@ -1,0 +1,7 @@
+# Dockerfile for the webapp dev server
+
+FROM node:10-slim
+
+WORKDIR /workdir
+
+RUN yarn install
