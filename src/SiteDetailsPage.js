@@ -49,7 +49,6 @@ class SiteDetailsPage extends Component {
     }
 
     if (this.state.site !== null) {
-      console.log(this.state.site);
       return (
         <div className='SiteDetailsPage'>
           <h1>
