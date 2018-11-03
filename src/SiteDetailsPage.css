@@ -21,3 +21,12 @@
 .SiteIcon {
   margin-right: 0.6rem;
 }
+
+.SiteDetailsPage h3 {
+  font-family: Arvo, sans-serif;
+  margin-top: 1.5rem;
+}
+
+.SiteDetailsPage .icon {
+  padding-right: 0.4rem;
+}

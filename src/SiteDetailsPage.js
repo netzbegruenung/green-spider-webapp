@@ -44,8 +44,66 @@ class SiteDetailsPage extends Component {
 
   render() {
     if (this.state.isLoading) {
-      // TODO: etwas schöner machen...
       return <div></div>;
+    }
+
+    // group criteria
+    let criteria = [
+      {
+        component: <ReachableField key='reachable' data={this.state.site.rating.SITE_REACHABLE} />,
+        data: this.state.site.rating.SITE_REACHABLE,
+      },
+      {
+        component: <CanonicalURLField key='canonicalurl' data={this.state.site.rating.CANONICAL_URL} />,
+        data: this.state.site.rating.CANONICAL_URL,
+      },
+      {
+        component: <HTTPSField key='https' data={this.state.site.rating.HTTPS} />,
+        data: this.state.site.rating.HTTPS,
+      },
+      {
+        component: <WWWOptionalField key='wwwoptional' data={this.state.site.rating.WWW_OPTIONAL} />,
+        data: this.state.site.rating.WWW_OPTIONAL,
+      },
+      {
+        component: <FaviconField key='favicon' data={this.state.site.rating.FAVICON} />,
+        data: this.state.site.rating.FAVICON,
+      },
+      {
+        component: <ResponsiveField key='responsive' data={this.state.site.rating.RESPONSIVE} />,
+        data: this.state.site.rating.RESPONSIVE,
+      },
+      {
+        component: <FontField key='font' data={this.state.site.rating.USE_SPECIFIC_FONTS} />,
+        data: this.state.site.rating.USE_SPECIFIC_FONTS,
+      },
+      {
+        component: <FeedField key='feed' data={this.state.site.rating.FEEDS} />,
+        data: this.state.site.rating.FEEDS,
+      },
+      {
+        component: <ScriptErrorsField key='scripterrors' data={this.state.site.rating.NO_SCRIPT_ERRORS} />,
+        data: this.state.site.rating.NO_SCRIPT_ERRORS,
+      },
+      {
+        component: <NetworkErrorsField key='networkerrors' data={this.state.site.rating.NO_NETWORK_ERRORS} />,
+        data: this.state.site.rating.NO_NETWORK_ERRORS,
+      },
+      {
+        component: <ResponseDurationField key='responseduration' data={this.state.site.rating.HTTP_RESPONSE_DURATION} />,
+        data: this.state.site.rating.HTTP_RESPONSE_DURATION,
+      },
+    ];
+
+    let criteriaToDo = [];
+    let criteriaDone = [];
+
+    for (var criterium of criteria) {
+      if (criterium.data.value) {
+        criteriaDone.push(criterium.component);
+      } else {
+        criteriaToDo.push(criterium.component);
+      }
     }
 
     if (this.state.site !== null) {
@@ -79,17 +137,13 @@ class SiteDetailsPage extends Component {
 
           <hr />
 
-          <ReachableField data={this.state.site.rating.SITE_REACHABLE} />
-          <CanonicalURLField data={this.state.site.rating.CANONICAL_URL} />
-          <HTTPSField data={this.state.site.rating.HTTPS} />
-          <WWWOptionalField data={this.state.site.rating.WWW_OPTIONAL} />
-          <FaviconField data={this.state.site.rating.FAVICON} />
-          <ResponsiveField data={this.state.site.rating.RESPONSIVE} />
-          <FontField data={this.state.site.rating.USE_SPECIFIC_FONTS} />
-          <FeedField data={this.state.site.rating.FEEDS} />
-          <ScriptErrorsField data={this.state.site.rating.NO_SCRIPT_ERRORS} />
-          <NetworkErrorsField data={this.state.site.rating.NO_NETWORK_ERRORS} />
-          <ResponseDurationField data={this.state.site.rating.HTTP_RESPONSE_DURATION} />
+          <h3>Empfehlungen</h3>
+
+          { (criteriaToDo.length > 0) ? criteriaToDo : null }
+
+          <h3>Erledigt</h3>
+
+          { (criteriaDone.length > 0) ? criteriaDone : null }
 
         </div>
       )
@@ -108,22 +162,22 @@ class SiteDetailsPage extends Component {
 
 class IconGood extends Component {
   render() {
-    return <i className='icon ion-md-checkmark-circle'></i>;
+    return <i className='icon ion-md-checkmark-circle align-middle'></i>;
   }
 }
 
 class IconBad extends Component {
   render() {
-    return <i className='icon ion-md-close-circle'></i>;
+    return <i className='icon ion-md-close-circle align-middle'></i>;
   }
 }
 
 class CriteriumField extends Component {
   render() {
     if (this.props.type === 'positive') {
-      return <div key={this.props.keyProp} className='good'><IconGood /> {this.props.title}</div>;
+      return <div key={this.props.keyProp} className='good'><IconGood /> <span className='align-middle'>{this.props.title}</span></div>;
     } else {
-      return <div key={this.props.keyProp} className='bad'><IconBad /> {this.props.title}</div>;
+      return <div key={this.props.keyProp} className='bad'><IconBad /> <span className='align-middle'>{this.props.title}</span></div>;
     }
   }
 }
@@ -133,7 +187,7 @@ class CanonicalURLField extends Component {
     if (this.props.data.value) {
       return <CriteriumField keyProp='canonicalurl' type='positive' title='Verschiedene URL-Varianten werden auf eine einzige umgeleitet' />
     }
-    return <CriteriumField keyProp='canonicalurl' type='negative' title='Verschiedene URL-Varianten werden nicht auf eine einzige umgeleitet' />
+    return <CriteriumField keyProp='canonicalurl' type='negative' title='Verschiedene URL-Varianten sollten auf eine einzige umgeleitet werden' />
   }
 }
 
@@ -170,9 +224,9 @@ class CMSInfo extends Component {
 class FaviconField extends Component {
   render() {
     if (this.props.data.value) {
-      return <CriteriumField keyProp='favicon' type='positive' title='Die Site hat ein Icon.' />;
+      return <CriteriumField keyProp='favicon' type='positive' title='Die Site hat ein Icon' />;
     }
-    return <CriteriumField keyProp='favicon' type='negative' title='Die Site hat kein Icon' />;
+    return <CriteriumField keyProp='favicon' type='negative' title='Die Site benötigt ein Icon' />;
   }
 }
 
@@ -181,7 +235,7 @@ class FeedField extends Component {
     if (this.props.data.value) {
       return <CriteriumField keyProp='feed' type='positive' title='Die Site verweist auf mind. einen RSS-/Atom-Feed' />;
     }
-    return <CriteriumField keyProp='feed' type='negative' title='Kein Link rel=alternate auf einen RSS-/Atom-Feed gefunden' />;
+    return <CriteriumField keyProp='feed' type='negative' title='Es sollten RSS- oder Atom-Feeds angeboten und mittels rel=alternate link verlinkt werden' />;
   }
 }
 
@@ -191,7 +245,7 @@ class FontField extends Component {
       if (this.props.data.value) {
         return <CriteriumField keyProp='font' type='positive' title='Die Site verwendet die Schriftart Arvo' />;
       }
-      return <CriteriumField keyProp='font' type='negative' title='Die Site verwendet die Schriftart Arvo nicht' />;
+      return <CriteriumField keyProp='font' type='negative' title='Die Site sollte die Schriftart Arvo verwenden' />;
     }
     return <div></div>;
   }
@@ -202,13 +256,13 @@ class HTTPSField extends Component {
     if (this.props.data.value) {
       return <CriteriumField keyProp='https' type='positive' title='Die Site ist über HTTPS erreichbar' />
     }
-    return <CriteriumField keyProp='https' type='negative' title='Die Site ist nicht über HTTPS erreichbar (-2 Punkte)' />
+    return <CriteriumField keyProp='https' type='negative' title='Die Site sollte über HTTPS erreichbar sein' />
   }
 }
 
 class ResponseDurationField extends Component {
   render() {
-    var icon = <i className='icon ion-md-speedometer'></i>;
+    var icon = <i className='icon ion-md-speedometer align-middle'></i>;
     var className = 'bad text';
     if (this.props.data.score > 0) {
       className = 'mediocre text';
@@ -218,7 +272,7 @@ class ResponseDurationField extends Component {
     }
 
     if (this.props.data.value) {
-      return <div className={className}>{icon} Server Antwortzeit: { this.props.data.value } ms</div>;
+      return <div className={className}>{icon} <span className='align-middle'>Server Antwortzeit: { this.props.data.value } ms</span></div>;
     }
     return <CriteriumField keyProp='duration' type='negative' title='Server Antwortzeit: Keine Angabe' />
   }
@@ -238,7 +292,7 @@ class ResponsiveField extends Component {
     if (this.props.data.value) {
       return <CriteriumField keyProp='responsive' type='positive' title='Die Site ist offenbar auf mobilen Endgeräten nutzbar' />
     }
-    return <CriteriumField keyProp='responsive' type='negative' title='Die Site scheint mobile Endgeräte nicht zu unterstützen' />
+    return <CriteriumField keyProp='responsive' type='negative' title='Mobile Endgeräte sollten unterstützt werden' />
   }
 }
 
@@ -248,29 +302,35 @@ class Screenshots extends Component {
     var baseURL = 'http://green-spider-screenshots.sendung.de';
 
     let pageScreenshot;
-    if (this.props.urls !== null && this.props.urls.length > 0) {
+    if (typeof this.props.urls !== 'undefined' && this.props.urls !== null && this.props.urls.length > 0) {
       if (typeof screenshots[this.props.urls[0]] !== 'undefined' &&
           screenshots[this.props.urls[0]] !== null) {
             pageScreenshot = screenshots[this.props.urls[0]];
       }
     }
     
-    if (pageScreenshot !== null) {
+    if (pageScreenshot) {
       var mobileScreenshot = baseURL + '/360x640/' + pageScreenshot;
       var desktopScreenshot = baseURL + '/1500x1500/' + pageScreenshot;
       
-      var mobile = <a className='screenshot' href={mobileScreenshot} target='_blank' title='Screenshot für Smartphone-Ansicht anzeigen'>
-        <img className='screenshot' src={mobileScreenshot} width='100%' alt='Mobile Screenshot' />
-      </a>;
+      var mobile = (
+        <a className='screenshot' href={mobileScreenshot} target='_blank' title='Screenshot für Smartphone-Ansicht anzeigen'>
+          <img className='screenshot' src={mobileScreenshot} width='100%' alt='Mobile Screenshot' />
+        </a>
+      );
 
-      var desktop = <a className='screenshot' href={desktopScreenshot} target='_blank' title='Screenshot für Desktop-Ansicht anzeigen'>
-        <img className='screenshot' src={desktopScreenshot} width='100%' alt='Desktop Screenshot' />
-      </a>;
+      var desktop = (
+        <a className='screenshot' href={desktopScreenshot} target='_blank' title='Screenshot für Desktop-Ansicht anzeigen'>
+          <img className='screenshot' src={desktopScreenshot} width='100%' alt='Desktop Screenshot' />
+        </a>
+      );
 
-      return (<div className='row d-flex align-items-stretch'>
-        <div className='col-3'>{mobile}</div>
-        <div className='col-9'>{desktop}</div>
-      </div>);
+      return (
+        <div className='row d-flex align-items-stretch'>
+          <div className='col-3'>{mobile}</div>
+          <div className='col-9'>{desktop}</div>
+        </div>
+      );
     }
 
     return <div>Aktuell sind keine Screenshots vorhanden</div>;
@@ -289,9 +349,10 @@ class SiteIcon extends Component {
       url = Object.keys(this.props.site.checks.html_head)[0];
     }
 
-    if (typeof this.props.site.checks.html_head[url].link_icon !== 'undefined' &&
-    this.props.site.checks.html_head[url].link_icon !== null &&
-    this.props.site.checks.html_head[url].link_icon !== '') {
+    if (typeof this.props.site.checks.html_head[url] !== 'undefined' &&
+      typeof this.props.site.checks.html_head[url].link_icon !== 'undefined' &&
+      this.props.site.checks.html_head[url].link_icon !== null &&
+      this.props.site.checks.html_head[url].link_icon !== '') {
       src = this.props.site.checks.html_head[url].link_icon;
     }
     
