@@ -5,7 +5,6 @@ import { TypeField, StateField } from './LocationLabel';
 import './SiteDetailsPage.css';
 import axios from 'axios';
 import punycode from 'punycode';
-import screenshots from './screenshots.json';
 
 
 class SiteDetailsPage extends Component {
@@ -298,42 +297,88 @@ class ResponsiveField extends Component {
 
 
 class Screenshots extends Component {
-  render() {
-    var baseURL = 'http://green-spider-screenshots.sendung.de';
+  state = {
+    isLoading: true,
+    screenshots: null,
+  };
 
-    let pageScreenshot;
-    if (typeof this.props.urls !== 'undefined' && this.props.urls !== null && this.props.urls.length > 0) {
-      if (typeof screenshots[this.props.urls[0]] !== 'undefined' &&
-          screenshots[this.props.urls[0]] !== null) {
-            pageScreenshot = screenshots[this.props.urls[0]];
+  componentDidMount() {
+    //var baseURL = 'http://green-spider-screenshots.sendung.de';
+    // load data
+    let url = this.props.urls[0];
+
+    axios.get(`/api/v1/screenshots/site?url=${url}`)
+      .then((response) => {
+        // Success
+        
+        let screenshots = null;
+
+        if (response.data.length > 0) {
+          screenshots = {mobile: null, desktop: null};
+
+          for (var i=0; i<response.data.length; i++) {
+            var width = response.data[i].size[0];
+            if (width < 500) {
+              screenshots.mobile = response.data[i];
+            } else {
+              screenshots.desktop = response.data[i];
+            }
+          }
+
+          // TODO: rewrite screenshot URLs
+        }
+
+        this.setState({
+          isLoading: false,
+          screenshots: screenshots,
+        });
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error);
+        this.setState({isLoading: false});
+      })
+      .then(() => {
+        // always executed
+      });
+  }
+
+  render() {
+    if (this.state.screenshots === null) {
+      if (this.state.isLoading) {
+        return <div>Lade Screenshots...</div>;
+      } else {
+        return <div>Aktuell sind keine Screenshots vorhanden</div>;
       }
     }
     
-    if (pageScreenshot) {
-      var mobileScreenshot = baseURL + '/360x640/' + pageScreenshot;
-      var desktopScreenshot = baseURL + '/1500x1500/' + pageScreenshot;
-      
-      var mobile = (
-        <a className='screenshot' href={mobileScreenshot} target='_blank' title='Screenshot für Smartphone-Ansicht anzeigen'>
-          <img className='screenshot' src={mobileScreenshot} width='100%' alt='Mobile Screenshot' />
-        </a>
-      );
+    var mobile = (
+      <a className='screenshot' href={this.state.screenshots.mobile.screenshot_url} target='_blank' title='Screenshot für Smartphone-Ansicht anzeigen'>
+        <img className='screenshot' src={this.state.screenshots.mobile.screenshot_url} width='100%' alt='Mobile Screenshot' />
+      </a>
+    );
 
-      var desktop = (
-        <a className='screenshot' href={desktopScreenshot} target='_blank' title='Screenshot für Desktop-Ansicht anzeigen'>
-          <img className='screenshot' src={desktopScreenshot} width='100%' alt='Desktop Screenshot' />
-        </a>
-      );
+    var desktop = (
+      <a className='screenshot' href={this.state.screenshots.desktop.screenshot_url} target='_blank' title='Screenshot für Desktop-Ansicht anzeigen'>
+        <img className='screenshot' src={this.state.screenshots.desktop.screenshot_url} width='100%' alt='Desktop Screenshot' />
+      </a>
+    );
 
-      return (
-        <div className='row d-flex align-items-stretch'>
-          <div className='col-3'>{mobile}</div>
-          <div className='col-9'>{desktop}</div>
+    return (
+      <div className='row'>
+        <div className='col-12'>
+          <div className='row d-flex align-items-stretch'>
+            <div className='col-3'>{mobile}</div>
+            <div className='col-9'>{desktop}</div>
+          </div>
+          <div className='row'>
+            <div className='col-12 text-right'>
+              <small>Screenshots vom {new Date(this.state.screenshots.mobile.created).toLocaleDateString('de-DE')}</small>
+            </div>
+          </div>
         </div>
-      );
-    }
-
-    return <div>Aktuell sind keine Screenshots vorhanden</div>;
+      </div>
+    );
   }
 }
 
