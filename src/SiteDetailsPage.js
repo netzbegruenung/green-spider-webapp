@@ -201,14 +201,19 @@ class CMSInfo extends Component {
       'wordpress-josephknowsbest': <a href='https://github.com/kre8tiv/Joseph-knows-best' target='_blank' rel='noopener noreferrer'>Wordpress mit Joseph Knows Best</a>,
     };
 
+    let placeholder = <span className='CMSInfo placeholder'><em><abbr title='Content Management System'>CMS</abbr> wurde nicht erkannt</em></span>;
+
     if (typeof this.props.site === 'undefined' || this.props.site === null) {
-      return <span />;
+      return placeholder;
     }
     if (Object.keys(this.props.site.checks.generator).length === 0) {
-      return <span />;
+      return placeholder;
     }
 
     var url = Object.keys(this.props.site.checks.generator)[0];
+    if (!this.props.site.checks.generator[url]) {
+      return placeholder;
+    }
     
     var label = this.props.site.checks.generator[url];
     if (typeof wellknownCMS[label] !== 'undefined') {
@@ -303,7 +308,7 @@ class Screenshots extends Component {
   };
 
   componentDidMount() {
-    //var baseURL = 'http://green-spider-screenshots.sendung.de';
+    var baseURL = 'http://green-spider-screenshots.sendung.de';
     // load data
     let url = this.props.urls[0];
 
@@ -317,6 +322,7 @@ class Screenshots extends Component {
           screenshots = {mobile: null, desktop: null};
 
           for (var i=0; i<response.data.length; i++) {
+            response.data[i].screenshot_url = response.data[i].screenshot_url.replace(baseURL, '/screenshots');
             var width = response.data[i].size[0];
             if (width < 500) {
               screenshots.mobile = response.data[i];

@@ -30,3 +30,7 @@
 .SiteDetailsPage .icon {
   padding-right: 0.4rem;
 }
+
+.CMSInfo.placeholder {
+  color: #999;
+}
