@@ -22,7 +22,7 @@ class SiteDetailsPage extends Component {
     // load data
     let url = this.props.match.match.params.siteId;
 
-    axios.get(`/api/v1/spider-results/site?url=${url}`)
+    axios.get(`/api/v1/spider-results/site?url=${url}&date=${this.props.lastUpdated}`)
       .then((response) => {
         // handle success
         this.setState({
@@ -73,7 +73,7 @@ class SiteDetailsPage extends Component {
         data: this.state.site.rating.RESPONSIVE,
       },
       {
-        component: <FontField key='font' data={this.state.site.rating.USE_SPECIFIC_FONTS} />,
+        component: <FontField key='font' data={this.state.site.rating.USE_SPECIFIC_FONTS} meta={this.state.site.meta}/>,
         data: this.state.site.rating.USE_SPECIFIC_FONTS,
       },
       {
@@ -98,7 +98,7 @@ class SiteDetailsPage extends Component {
     let criteriaDone = [];
 
     for (var criterium of criteria) {
-      if (criterium.data.value) {
+      if (criterium.data.score === criterium.data.max_score) {
         criteriaDone.push(criterium.component);
       } else {
         criteriaToDo.push(criterium.component);
@@ -124,7 +124,7 @@ class SiteDetailsPage extends Component {
 
           <hr />
           
-          <Screenshots urls={this.state.site.checks.url_canonicalization} />
+          <Screenshots urls={this.state.site.checks.url_canonicalization} lastUpdated={this.props.lastUpdated}/>
 
           <hr />
 
@@ -143,6 +143,10 @@ class SiteDetailsPage extends Component {
           <h3>Erledigt</h3>
 
           { (criteriaDone.length > 0) ? criteriaDone : null }
+
+          <hr />
+
+          <p><small>Site zuletzt geprüft am { new Date(this.state.site.created).toLocaleDateString('de-DE') }</small></p>
 
         </div>
       )
@@ -245,11 +249,16 @@ class FeedField extends Component {
 
 class FontField extends Component {
   render() {
+    let font = 'Arvo';
+    if (this.props.meta && this.props.meta.type && this.props.meta.type === 'YOUTH_ORGANIZATION') {
+      font = 'Titillium';
+    }
+
     if (typeof this.props.data !== 'undefined') {
       if (this.props.data.value) {
-        return <CriteriumField keyProp='font' type='positive' title='Die Site verwendet die Schriftart Arvo' />;
+        return <CriteriumField keyProp='font' type='positive' title={`Die Site verwendet die Schriftart ${font}`} />;
       }
-      return <CriteriumField keyProp='font' type='negative' title='Die Site sollte die Schriftart Arvo verwenden' />;
+      return <CriteriumField keyProp='font' type='negative' title={`Die Site sollte die Schriftart ${font} verwenden`} />;
     }
     return <div></div>;
   }
@@ -275,9 +284,12 @@ class ResponseDurationField extends Component {
       className = 'good text';
     }
 
-    if (this.props.data.value) {
-      return <div className={className}>{icon} <span className='align-middle'>Server Antwortzeit: { this.props.data.value } ms</span></div>;
+    if (this.props.data.score === this.props.data.max_score) {
+      return <div className={className}>{icon} <span className='align-middle'>Server Antwortzeit ist sehr kurz ({ this.props.data.value } ms)</span></div>;
+    } else if (this.props.data.score >= 0) {
+      return <div className={className}>{icon} <span className='align-middle'>Server Antwortzeit verkürzen ({ this.props.data.value } ms)</span></div>;
     }
+
     return <CriteriumField keyProp='duration' type='negative' title='Server Antwortzeit: Keine Angabe' />
   }
 }
@@ -309,44 +321,51 @@ class Screenshots extends Component {
 
   componentDidMount() {
     var baseURL = 'http://green-spider-screenshots.sendung.de';
+    
     // load data
-    let url = this.props.urls[0];
+    if (this.props.urls && this.props.urls.length > 0) {
+      let url = this.props.urls[0];
 
-    axios.get(`/api/v1/screenshots/site?url=${url}`)
-      .then((response) => {
-        // Success
-        
-        let screenshots = null;
+      axios.get(`/api/v1/screenshots/site?url=${encodeURIComponent(url)}&date=${this.props.lastUpdated}`)
+        .then((response) => {
+          // Success
+          
+          let screenshots = null;
 
-        if (response.data.length > 0) {
-          screenshots = {mobile: null, desktop: null};
+          if (response.data.length > 0) {
+            screenshots = {mobile: null, desktop: null};
 
-          for (var i=0; i<response.data.length; i++) {
-            response.data[i].screenshot_url = response.data[i].screenshot_url.replace(baseURL, '/screenshots');
-            var width = response.data[i].size[0];
-            if (width < 500) {
-              screenshots.mobile = response.data[i];
-            } else {
-              screenshots.desktop = response.data[i];
+            for (var i=0; i<response.data.length; i++) {
+              response.data[i].screenshot_url = response.data[i].screenshot_url.replace(baseURL, '/screenshots');
+              var width = response.data[i].size[0];
+              if (width < 500) {
+                screenshots.mobile = response.data[i];
+              } else {
+                screenshots.desktop = response.data[i];
+              }
             }
+
+            // TODO: rewrite screenshot URLs
           }
 
-          // TODO: rewrite screenshot URLs
-        }
-
-        this.setState({
-          isLoading: false,
-          screenshots: screenshots,
+          this.setState({
+            isLoading: false,
+            screenshots: screenshots,
+          });
+        })
+        .catch((error) => {
+          // handle error
+          console.error(error);
+          this.setState({isLoading: false});
+        })
+        .then(() => {
+          // always executed
         });
-      })
-      .catch((error) => {
-        // handle error
-        console.error(error);
-        this.setState({isLoading: false});
-      })
-      .then(() => {
-        // always executed
+    } else {
+      this.setState({
+        isLoading: false,
       });
+    }
   }
 
   render() {
@@ -430,7 +449,7 @@ class ScriptErrorsField extends Component {
       if (this.props.data.value) {
         return <CriteriumField keyProp='noscripterrors' type='positive' title='Es wurden keine JavaScript-Fehler festgestellt' />;
       }
-      return <CriteriumField keyProp='noscripterrors' type='negative' title='Auf der Seite wurden JavaScript-Fehler gefunden' />;
+      return <CriteriumField keyProp='noscripterrors' type='negative' title='JavaScript-Fehler beheben' />;
     }
     return <div></div>;
   }
@@ -442,7 +461,7 @@ class NetworkErrorsField extends Component {
       if (this.props.data.value) {
         return <CriteriumField keyProp='nonetworkerrors' type='positive' title='Es wurden keine Probleme beim Laden verknüpfter Ressourcen festgestellt' />;
       }
-      return <CriteriumField keyProp='nonetworkerrors' type='negative' title='Beim Laden verknüpfter Ressourcen sind Fehler aufgetreten' />;
+      return <CriteriumField keyProp='nonetworkerrors' type='negative' title='Fehler beim Laden verknüpfter Ressourcen vermeiden' />;
     }
     return <div></div>;
   }

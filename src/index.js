@@ -21,40 +21,45 @@ class App extends React.Component {
   };
 
   componentDidMount = () => {
+    // check for fresh data every 5 minutes
+    window.setInterval(this.loadData, 5 * 60 * 1000);
+
+    // and load fresh data now
     this.loadData();
   }
 
   loadData = () => {
-    axios.get('/api/v1/spider-results/compact/')
+    axios.get('/api/v1/spider-results/last-updated/')
       .then((response) => {
-        // handle success
-        let sitesHash = {};
-        let maxDate = '';
-        for (var site of response.data) {
-          sitesHash[site.input_url] = site;
-          
-          // get latest date
-          if (site.created > maxDate) {
-            maxDate = site.created;
-          }
+        // load data only of newer than what we have
+        if (response.data.last_updated !== this.state.sitesLastUpdated) {
+          this.setState({loading: true});
+
+          axios.get('/api/v1/spider-results/compact/?date=' + encodeURIComponent(response.data.last_updated))
+            .then((response2) => {
+              // handle success
+              let sitesHash = {};
+              for (var site of response2.data) {
+                sitesHash[site.input_url] = site;
+              }
+
+              this.setState({
+                loading: false,
+                sitesHash: sitesHash,
+                sitesLastUpdated: response.data.last_updated,
+                searchIndex: this.createSearchIndex(response2.data),
+              });
+
+            })
+            .catch((error) => {
+              console.error(error);
+              this.setState({loading: false});
+            })
         }
-
-        this.setState({
-          loading: false,
-          sitesHash: sitesHash,
-          sitesLastUpdated: maxDate,
-          searchIndex: this.createSearchIndex(response.data),
-        });
-
       })
       .catch((error) => {
-        // handle error
-        console.error(error);
-        this.setState({loading: false});
+        console.error('error checking for updates', error);
       })
-      .then(() => {
-        // always executed
-      });
   }
 
   createSearchIndex = (sites) => {
@@ -87,8 +92,8 @@ class App extends React.Component {
             <div className='row'>
               <div className='col-lg'></div>
               <div className='col-lg-8 col-sm-12'>
-                <Route render={() => <SitesSearch sitesHash={this.state.sitesHash} searchIndex={this.state.searchIndex} />} exact path="/" />
-                <Route component={(match) => <SiteDetailsPage match={match} sitesHash={this.state.sitesHash} />} path="/sites/:siteId" />
+                <Route render={() => <SitesSearch sitesHash={this.state.sitesHash} searchIndex={this.state.searchIndex} lastUpdated={this.state.sitesLastUpdated} />} exact path="/" />
+                <Route component={(match) => <SiteDetailsPage match={match} sitesHash={this.state.sitesHash} lastUpdated={this.state.sitesLastUpdated} />} path="/sites/:siteId" />
               </div>
               <div className='col-lg'></div>
             </div>
