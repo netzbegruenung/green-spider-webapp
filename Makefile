@@ -1,10 +1,6 @@
 
 IMAGE := quay.io/netzbegruenung/green-spider:latest
 
-# Run a development server and load it in your default browser.
-# Will reload as soon as some source has changed.
-dev:
-	yarn start
 
 # Build the web application to be served by a static web server
 build:
@@ -15,8 +11,17 @@ dist: build
 	rm -rf docs
 	cp -r build docs
 
+# Run a development server on http://localhost:8000
+dev:
+	docker-compose -f docker-compose.yaml up --build
+
+# Run a staging server at http://localhost:8080
+serve-staging:
+	docker-compose -f docker-compose-staging.yaml up --build
+
+# Run the production setup at https://localhost
 serve-prod:
-	cd docs && python3 -m http.server
+	docker-compose -f docker-compose-prod.yaml up --build
 
 clean:
 	rm -rf build
