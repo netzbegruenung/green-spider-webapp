@@ -1,0 +1,77 @@
+.TypeField {
+  font-size: 85%;
+  font-weight: 700;
+  text-decoration-line: none;
+  color: #333;
+}
+
+.SitesSearch {
+  font-size: 1.3rem;
+  padding: 0.2rem 0;
+  margin: 0.3rem 0;
+  border-radius: 0.3rem;
+}
+
+div.SitesSearch:hover {
+  background-color: #eee;
+}
+
+a.SitesSearch:hover {
+  text-decoration: none;
+}
+
+.LocationLabel {
+  display: block;
+  color: #666;
+}
+
+.URLField {
+  display: block;
+  font-size: 90%;
+  color: #999;
+}
+
+.searchInputRow {
+  background-color: #4cb4e7;
+}
+
+.searchInputRow label {
+  font-family: Arvo, sans-serif;
+  font-weight: 400;
+  color: #ffee00;
+}
+
+.searchInputRow label {
+  margin-top: 1rem;
+}
+
+.searchInputRow input {
+  width: 100%;
+}
+
+.searchInputRow small.form-text {
+  position: relative;
+  top: 6px;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: searchfield-cancel-button;
+}
+
+.row.placeholder {
+  color: #e6007e;
+  background-color: #d4edfc;
+  font-family: Arvo, sans-serif;
+  font-size: 2rem;
+  padding: 2rem 2rem;
+}
+
+.row.improve {
+  padding: 2rem 2rem;
+  font-family: Arvo, sans-serif;
+  font-size: 1.2rem;
+}
+
+.row.results {
+  margin-top: 1rem;
+}

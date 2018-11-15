@@ -1,0 +1,34 @@
+version: "3"
+services:
+
+  # The static file server and proxy on port 80
+  webapp:
+    image: quay.io/netzbegruenung/green-spider-webapp:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ".:/workdir"
+      - ${PWD}/config/nginx/nginx_staging.conf:/etc/nginx/nginx.conf
+      - ${PWD}/proxy-cache-staging:/var/cache/nginx
+    depends_on:
+      - api
+    networks:
+      - staging
+
+  api:
+    image: quay.io/netzbegruenung/green-spider-api:latest
+    ports:
+      - 5000:5000
+    environment:
+      GCLOUD_DATASTORE_CREDENTIALS_PATH: /secrets/datastore-reader.json
+    volumes:
+      - "./secrets:/secrets"
+    networks:
+      - staging
+
+networks:
+  staging:
+    driver: bridge

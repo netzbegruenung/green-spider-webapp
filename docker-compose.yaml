@@ -1,0 +1,32 @@
+version: "3"
+services:
+  
+  # proxy passing through webapp and api
+  proxy:
+    image: nginx:1.14-alpine
+    ports:
+      - "8000:8000"
+    volumes:
+      - ${PWD}/config/nginx/nginx_dev.conf:/etc/nginx/nginx.conf
+      - ${PWD}/proxy-cache:/var/cache/nginx
+
+  # The webapp dev server on port 3000
+  webapp:
+    image: green-spider-webapp:dev
+    build:
+      context: .
+      dockerfile: Dockerfile_node_dev
+    command: yarn start
+    ports:
+    - "3000:3000"
+    volumes:
+      - ".:/workdir"
+  
+  api:
+    image: quay.io/netzbegruenung/green-spider-api:latest
+    ports:
+    - 5000:5000
+    environment:
+      GCLOUD_DATASTORE_CREDENTIALS_PATH: /secrets/datastore-reader.json
+    volumes:
+      - "./secrets:/secrets"

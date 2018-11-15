@@ -4,14 +4,19 @@ WORKDIR /
 
 ADD yarn.lock /
 ADD package.json /
-ADD src /src
 ADD scripts /scripts
-ADD public /public
-ADD config /config
 
 RUN yarn install
+
+ADD config /config
+ADD public /public
+ADD src /src
+
 RUN yarn build
 
 FROM nginx:1.14-alpine
+
+# move this file, as /etc/nginx/ will be masked by a volume
+RUN cp /etc/nginx/mime.types /mime.types
+
 COPY --from=builder /build /usr/share/nginx/html
-COPY config/nginx.conf /etc/nginx/nginx.conf

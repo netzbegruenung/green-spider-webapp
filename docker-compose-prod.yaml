@@ -1,0 +1,24 @@
+version: "3"
+services:
+
+  # The HTTPS server and proxy on port 443
+  webapp:
+    image: quay.io/netzbegruenung/green-spider-webapp:latest
+    restart: always
+    ports:
+    - "443:443"
+    volumes:
+      - $PWD:/workdir
+      - $PWD/config/nginx/nginx_prod.conf:/etc/nginx/nginx.conf
+      - $PWD/test-certs:/etc/letsencrypt/live/green-spider.netzbegruenung.de
+      - $PWD/proxy-cache-prod:/var/cache/nginx
+
+  api:
+    image: quay.io/netzbegruenung/green-spider-api:latest
+    restart: always
+    ports:
+    - 5000:5000
+    environment:
+      GCLOUD_DATASTORE_CREDENTIALS_PATH: /secrets/datastore-reader.json
+    volumes:
+      - $PWD/secrets:/secrets

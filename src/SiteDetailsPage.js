@@ -1,28 +1,186 @@
 import React, { Component } from 'react';
-import punycode from 'punycode';
 import LocationLabel from './LocationLabel';
 import ScoreField from './ScoreField';
 import { TypeField, StateField } from './LocationLabel';
 import './SiteDetailsPage.css';
+import axios from 'axios';
+import punycode from 'punycode';
+
+
+class SiteDetailsPage extends Component {
+  state = {
+    isLoading: true,
+    site: null,
+    url: null,
+  };
+
+  componentDidMount() {
+    // ensure that this view is opened at the top
+    // when coming from the SiteSearch
+    window.scrollTo(0, 0);
+
+    // load data
+    let url = this.props.match.match.params.siteId;
+
+    axios.get(`/api/v1/spider-results/site?url=${url}&date=${this.props.lastUpdated}`)
+      .then((response) => {
+        // handle success
+        this.setState({
+          isLoading: false,
+          site: response.data,
+          url: decodeURIComponent(url),
+        });
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error);
+        this.setState({isLoading: false});
+      })
+      .then(() => {
+        // always executed
+      });
+  }
+
+  render() {
+    if (this.state.isLoading) {
+      return <div></div>;
+    }
+
+    // group criteria
+    let criteria = [
+      {
+        component: <ReachableField key='reachable' data={this.state.site.rating.SITE_REACHABLE} />,
+        data: this.state.site.rating.SITE_REACHABLE,
+      },
+      {
+        component: <CanonicalURLField key='canonicalurl' data={this.state.site.rating.CANONICAL_URL} />,
+        data: this.state.site.rating.CANONICAL_URL,
+      },
+      {
+        component: <HTTPSField key='https' data={this.state.site.rating.HTTPS} />,
+        data: this.state.site.rating.HTTPS,
+      },
+      {
+        component: <WWWOptionalField key='wwwoptional' data={this.state.site.rating.WWW_OPTIONAL} />,
+        data: this.state.site.rating.WWW_OPTIONAL,
+      },
+      {
+        component: <FaviconField key='favicon' data={this.state.site.rating.FAVICON} />,
+        data: this.state.site.rating.FAVICON,
+      },
+      {
+        component: <ResponsiveField key='responsive' data={this.state.site.rating.RESPONSIVE} />,
+        data: this.state.site.rating.RESPONSIVE,
+      },
+      {
+        component: <FontField key='font' data={this.state.site.rating.USE_SPECIFIC_FONTS} meta={this.state.site.meta}/>,
+        data: this.state.site.rating.USE_SPECIFIC_FONTS,
+      },
+      {
+        component: <FeedField key='feed' data={this.state.site.rating.FEEDS} />,
+        data: this.state.site.rating.FEEDS,
+      },
+      {
+        component: <ScriptErrorsField key='scripterrors' data={this.state.site.rating.NO_SCRIPT_ERRORS} />,
+        data: this.state.site.rating.NO_SCRIPT_ERRORS,
+      },
+      {
+        component: <NetworkErrorsField key='networkerrors' data={this.state.site.rating.NO_NETWORK_ERRORS} />,
+        data: this.state.site.rating.NO_NETWORK_ERRORS,
+      },
+      {
+        component: <ResponseDurationField key='responseduration' data={this.state.site.rating.HTTP_RESPONSE_DURATION} />,
+        data: this.state.site.rating.HTTP_RESPONSE_DURATION,
+      },
+    ];
+
+    let criteriaToDo = [];
+    let criteriaDone = [];
+
+    for (var criterium of criteria) {
+      if (criterium.data.score === criterium.data.max_score) {
+        criteriaDone.push(criterium.component);
+      } else {
+        criteriaToDo.push(criterium.component);
+      }
+    }
+
+    if (this.state.site !== null) {
+      return (
+        <div className='SiteDetailsPage'>
+          <h1>
+            <LocationLabel brief={false} level={this.state.site.meta.level} 
+                         type={this.state.site.meta.type} 
+                         district={this.state.site.meta.district}
+                         city={this.state.site.meta.city}
+                         state={this.state.site.meta.state} />
+          </h1>
+
+          <p><SiteIcon site={this.state.site} /> <a href={ this.state.url } rel='noopener noreferrer' target='_blank'>{ punycode.toUnicode(this.state.url) }</a></p>
+
+          <hr />
+
+          <ScoreComparisonWidget allSites={this.props.sitesHash} thisSite={this.state.site} maxScore={13} />
+
+          <hr />
+          
+          <Screenshots urls={this.state.site.checks.url_canonicalization} lastUpdated={this.props.lastUpdated}/>
+
+          <hr />
+
+          <div className='row'>
+            <div className='col'>
+              <CMSInfo site={this.state.site} />
+            </div>
+          </div>
+
+          <hr />
+
+          <h3>Empfehlungen</h3>
+
+          { (criteriaToDo.length > 0) ? criteriaToDo : null }
+
+          <h3>Erledigt</h3>
+
+          { (criteriaDone.length > 0) ? criteriaDone : null }
+
+          <hr />
+
+          <p><small>Site zuletzt geprüft am { new Date(this.state.site.created).toLocaleDateString('de-DE') }</small></p>
+
+        </div>
+      )
+    } else {
+      return (
+        <div className='SiteDetailsPage'>
+          <h1>{ this.url }</h1>
+
+          <p>Daten werden geladen...</p>
+
+        </div>
+      )
+    }
+  }
+}
 
 class IconGood extends Component {
   render() {
-    return <i className='icon ion-md-checkmark-circle'></i>;
+    return <i className='icon ion-md-checkmark-circle align-middle'></i>;
   }
 }
 
 class IconBad extends Component {
   render() {
-    return <i className='icon ion-md-close-circle'></i>;
+    return <i className='icon ion-md-close-circle align-middle'></i>;
   }
 }
 
 class CriteriumField extends Component {
   render() {
     if (this.props.type === 'positive') {
-      return <div key={this.props.keyProp} className='good'><IconGood /> {this.props.title}</div>;
+      return <div key={this.props.keyProp} className='good'><IconGood /> <span className='align-middle'>{this.props.title}</span></div>;
     } else {
-      return <div key={this.props.keyProp} className='bad'><IconBad /> {this.props.title}</div>;
+      return <div key={this.props.keyProp} className='bad'><IconBad /> <span className='align-middle'>{this.props.title}</span></div>;
     }
   }
 }
@@ -32,7 +190,7 @@ class CanonicalURLField extends Component {
     if (this.props.data.value) {
       return <CriteriumField keyProp='canonicalurl' type='positive' title='Verschiedene URL-Varianten werden auf eine einzige umgeleitet' />
     }
-    return <CriteriumField keyProp='canonicalurl' type='negative' title='Verschiedene URL-Varianten werden nicht auf eine einzige umgeleitet' />
+    return <CriteriumField keyProp='canonicalurl' type='negative' title='Verschiedene URL-Varianten sollten auf eine einzige umgeleitet werden' />
   }
 }
 
@@ -47,35 +205,36 @@ class CMSInfo extends Component {
       'wordpress-josephknowsbest': <a href='https://github.com/kre8tiv/Joseph-knows-best' target='_blank' rel='noopener noreferrer'>Wordpress mit Joseph Knows Best</a>,
     };
 
-    if (typeof this.props.cms !== 'undefined' && this.props.cms.length > 0 && this.props.cms[0]) {
+    let placeholder = <span className='CMSInfo placeholder'><em><abbr title='Content Management System'>CMS</abbr> wurde nicht erkannt</em></span>;
 
-      var label = this.props.cms[0];
-      if (typeof wellknownCMS[label] !== 'undefined') {
-        label = wellknownCMS[label];
-      }
-
-      return <span className='CMSInfo'>Die Site wird erstellt mit { label }</span>;
+    if (typeof this.props.site === 'undefined' || this.props.site === null) {
+      return placeholder;
     }
-    return <span />;
+    if (Object.keys(this.props.site.checks.generator).length === 0) {
+      return placeholder;
+    }
+
+    var url = Object.keys(this.props.site.checks.generator)[0];
+    if (!this.props.site.checks.generator[url]) {
+      return placeholder;
+    }
+    
+    var label = this.props.site.checks.generator[url];
+    if (typeof wellknownCMS[label] !== 'undefined') {
+      label = wellknownCMS[label];
+    }
+
+    return <span className='CMSInfo'>Die Site wird erstellt mit { label }</span>;
   }
 }
 
 
 class FaviconField extends Component {
   render() {
-    var icons = [];
-    if (typeof this.props.icons !== 'undefined') {
-      icons = Object.values(this.props.icons);
-    }
-
     if (this.props.data.value) {
-      // icon is available for display
-      if (icons.length) {
-        return <CriteriumField keyProp='favicon' type='positive' title='Die Site verwendet das oben gezeigte Icon' />;
-      }
-      return <CriteriumField keyProp='favicon' type='positive' title='Die Site hat ein Icon, das jedoch nicht herunter geladen werden konnte.' />;
+      return <CriteriumField keyProp='favicon' type='positive' title='Die Site hat ein Icon' />;
     }
-    return <CriteriumField keyProp='favicon' type='negative' title='Die Site hat kein Icon' />;
+    return <CriteriumField keyProp='favicon' type='negative' title='Die Site benötigt ein Icon' />;
   }
 }
 
@@ -84,17 +243,22 @@ class FeedField extends Component {
     if (this.props.data.value) {
       return <CriteriumField keyProp='feed' type='positive' title='Die Site verweist auf mind. einen RSS-/Atom-Feed' />;
     }
-    return <CriteriumField keyProp='feed' type='negative' title='Kein Link rel=alternate auf einen RSS-/Atom-Feed gefunden' />;
+    return <CriteriumField keyProp='feed' type='negative' title='Es sollten RSS- oder Atom-Feeds angeboten und mittels rel=alternate link verlinkt werden' />;
   }
 }
 
 class FontField extends Component {
   render() {
+    let font = 'Arvo';
+    if (this.props.meta && this.props.meta.type && this.props.meta.type === 'YOUTH_ORGANIZATION') {
+      font = 'Titillium';
+    }
+
     if (typeof this.props.data !== 'undefined') {
       if (this.props.data.value) {
-        return <CriteriumField keyProp='font' type='positive' title='Die Site verwendet die Schriftart Arvo' />;
+        return <CriteriumField keyProp='font' type='positive' title={`Die Site verwendet die Schriftart ${font}`} />;
       }
-      return <CriteriumField keyProp='font' type='negative' title='Die Site verwendet die Schriftart Arvo nicht' />;
+      return <CriteriumField keyProp='font' type='negative' title={`Die Site sollte die Schriftart ${font} verwenden`} />;
     }
     return <div></div>;
   }
@@ -105,13 +269,13 @@ class HTTPSField extends Component {
     if (this.props.data.value) {
       return <CriteriumField keyProp='https' type='positive' title='Die Site ist über HTTPS erreichbar' />
     }
-    return <CriteriumField keyProp='https' type='negative' title='Die Site ist nicht über HTTPS erreichbar (-2 Punkte)' />
+    return <CriteriumField keyProp='https' type='negative' title='Die Site sollte über HTTPS erreichbar sein' />
   }
 }
 
 class ResponseDurationField extends Component {
   render() {
-    var icon = <i className='icon ion-md-speedometer'></i>;
+    var icon = <i className='icon ion-md-speedometer align-middle'></i>;
     var className = 'bad text';
     if (this.props.data.score > 0) {
       className = 'mediocre text';
@@ -120,9 +284,12 @@ class ResponseDurationField extends Component {
       className = 'good text';
     }
 
-    if (this.props.data.value) {
-      return <div className={className}>{icon} Server Antwortzeit: { this.props.data.value } ms</div>;
+    if (this.props.data.score === this.props.data.max_score) {
+      return <div className={className}>{icon} <span className='align-middle'>Server Antwortzeit ist sehr kurz ({ this.props.data.value } ms)</span></div>;
+    } else if (this.props.data.score >= 0) {
+      return <div className={className}>{icon} <span className='align-middle'>Server Antwortzeit verkürzen ({ this.props.data.value } ms)</span></div>;
     }
+
     return <CriteriumField keyProp='duration' type='negative' title='Server Antwortzeit: Keine Angabe' />
   }
 }
@@ -141,50 +308,128 @@ class ResponsiveField extends Component {
     if (this.props.data.value) {
       return <CriteriumField keyProp='responsive' type='positive' title='Die Site ist offenbar auf mobilen Endgeräten nutzbar' />
     }
-    return <CriteriumField keyProp='responsive' type='negative' title='Die Site scheint mobile Endgeräte nicht zu unterstützen' />
+    return <CriteriumField keyProp='responsive' type='negative' title='Mobile Endgeräte sollten unterstützt werden' />
   }
 }
 
 
 class Screenshots extends Component {
-  render() {
+  state = {
+    isLoading: true,
+    screenshots: null,
+  };
+
+  componentDidMount() {
     var baseURL = 'http://green-spider-screenshots.sendung.de';
-
     
-    if (this.props.screenshot !== null && typeof this.props.screenshot !== 'undefined') {
-      var mobileScreenshot = baseURL + '/360x640/' + this.props.screenshot;
-      var desktopScreenshot = baseURL + '/1500x1500/' + this.props.screenshot;
-      
-      var mobile = <a className='screenshot' href={mobileScreenshot} target='_blank' title='Screenshot für Smartphone-Ansicht anzeigen'>
-        <img className='screenshot' src={mobileScreenshot} width='100%' alt='Mobile Screenshot' />
-      </a>;
+    // load data
+    if (this.props.urls && this.props.urls.length > 0) {
+      let url = this.props.urls[0];
 
-      var desktop = <a className='screenshot' href={desktopScreenshot} target='_blank' title='Screenshot für Desktop-Ansicht anzeigen'>
-        <img className='screenshot' src={desktopScreenshot} width='100%' alt='Desktop Screenshot' />
-      </a>;
+      axios.get(`/api/v1/screenshots/site?url=${encodeURIComponent(url)}&date=${this.props.lastUpdated}`)
+        .then((response) => {
+          // Success
+          
+          let screenshots = null;
 
-      return (<div className='row d-flex align-items-stretch'>
-        <div className='col-3'>{mobile}</div>
-        <div className='col-9'>{desktop}</div>
-      </div>);
+          if (response.data.length > 0) {
+            screenshots = {mobile: null, desktop: null};
+
+            for (var i=0; i<response.data.length; i++) {
+              response.data[i].screenshot_url = response.data[i].screenshot_url.replace(baseURL, '/screenshots');
+              var width = response.data[i].size[0];
+              if (width < 500) {
+                screenshots.mobile = response.data[i];
+              } else {
+                screenshots.desktop = response.data[i];
+              }
+            }
+
+            // TODO: rewrite screenshot URLs
+          }
+
+          this.setState({
+            isLoading: false,
+            screenshots: screenshots,
+          });
+        })
+        .catch((error) => {
+          // handle error
+          console.error(error);
+          this.setState({isLoading: false});
+        })
+        .then(() => {
+          // always executed
+        });
+    } else {
+      this.setState({
+        isLoading: false,
+      });
     }
+  }
 
-    return <div>Aktuell sind keine Screenshots vorhanden</div>;
+  render() {
+    if (this.state.screenshots === null) {
+      if (this.state.isLoading) {
+        return <div>Lade Screenshots...</div>;
+      } else {
+        return <div>Aktuell sind keine Screenshots vorhanden</div>;
+      }
+    }
+    
+    var mobile = (
+      <a className='screenshot' href={this.state.screenshots.mobile.screenshot_url} target='_blank' title='Screenshot für Smartphone-Ansicht anzeigen'>
+        <img className='screenshot' src={this.state.screenshots.mobile.screenshot_url} width='100%' alt='Mobile Screenshot' />
+      </a>
+    );
+
+    var desktop = (
+      <a className='screenshot' href={this.state.screenshots.desktop.screenshot_url} target='_blank' title='Screenshot für Desktop-Ansicht anzeigen'>
+        <img className='screenshot' src={this.state.screenshots.desktop.screenshot_url} width='100%' alt='Desktop Screenshot' />
+      </a>
+    );
+
+    return (
+      <div className='row'>
+        <div className='col-12'>
+          <div className='row d-flex align-items-stretch'>
+            <div className='col-3'>{mobile}</div>
+            <div className='col-9'>{desktop}</div>
+          </div>
+          <div className='row'>
+            <div className='col-12 text-right'>
+              <small>Screenshots vom {new Date(this.state.screenshots.mobile.created).toLocaleDateString('de-DE')}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 }
 
 class SiteIcon extends Component {
   render() {
-    var icons = [];
-    if (typeof this.props.icons !== 'undefined') {
-      icons = Object.values(this.props.icons);
-    } else {
+    if (this.props.site === null) {
       return <span />;
     }
-    
-    if (icons.length > 0) {
-      return <img className='SiteIcon' src={'/siteicons/' + icons[0]} width={32} height={32} alt='Icon' />;
+
+    var src;
+    var url;
+    if (typeof this.props.site.checks.html_head === 'object') {
+      url = Object.keys(this.props.site.checks.html_head)[0];
     }
+
+    if (typeof this.props.site.checks.html_head[url] !== 'undefined' &&
+      typeof this.props.site.checks.html_head[url].link_icon !== 'undefined' &&
+      this.props.site.checks.html_head[url].link_icon !== null &&
+      this.props.site.checks.html_head[url].link_icon !== '') {
+      src = this.props.site.checks.html_head[url].link_icon;
+    }
+    
+    if (src) {
+      return <img className='SiteIcon' src={src} width={32} height={32} alt='Icon' />;
+    }
+
     return <span />;
   }
 }
@@ -204,7 +449,7 @@ class ScriptErrorsField extends Component {
       if (this.props.data.value) {
         return <CriteriumField keyProp='noscripterrors' type='positive' title='Es wurden keine JavaScript-Fehler festgestellt' />;
       }
-      return <CriteriumField keyProp='noscripterrors' type='negative' title='Auf der Seite wurden JavaScript-Fehler gefunden' />;
+      return <CriteriumField keyProp='noscripterrors' type='negative' title='JavaScript-Fehler beheben' />;
     }
     return <div></div>;
   }
@@ -216,7 +461,7 @@ class NetworkErrorsField extends Component {
       if (this.props.data.value) {
         return <CriteriumField keyProp='nonetworkerrors' type='positive' title='Es wurden keine Probleme beim Laden verknüpfter Ressourcen festgestellt' />;
       }
-      return <CriteriumField keyProp='nonetworkerrors' type='negative' title='Beim Laden verknüpfter Ressourcen sind Fehler aufgetreten' />;
+      return <CriteriumField keyProp='nonetworkerrors' type='negative' title='Fehler beim Laden verknüpfter Ressourcen vermeiden' />;
     }
     return <div></div>;
   }
@@ -230,8 +475,10 @@ class ScoreComparisonWidget extends Component {
     var indexAll = 0;
     var indexSiteType = 0;
     var indexState = 0;
-    for (var site of this.props.allSites) {
+    for (var url of Object.keys(this.props.allSites)) {
       countAll++;
+
+      var site = this.props.allSites[url];
 
       if (site.meta.type === this.props.thisSite.meta.type && site.meta.level === this.props.thisSite.meta.level) {
         countType++;
@@ -263,6 +510,10 @@ class ScoreComparisonWidget extends Component {
   }
 
   render() {
+    if (this.props.allSites === null) {
+      return <div className='row d-flex'></div>;
+    }
+
     var index = this.calculateIndizes();
 
     return (
@@ -280,96 +531,4 @@ class ScoreComparisonWidget extends Component {
   }
 }
 
-
-class SiteDetailsPage extends Component {
-  constructor(props) {
-    super(props);
-
-    var url = decodeURIComponent(props.match.params.siteId);
-    var site = null;
-    // load data
-    props.sites.forEach((element) => {
-      if (element.input_url === url) {
-        site = element;
-      }
-    });
-
-    this.state = {
-      site: site,
-      url: url,
-    };
-  }
-
-  componentDidMount() {
-    window.scrollTo(0, 0);
-  }
-
-  render() {
-    var screenshots;
-    if (typeof this.state !== 'undefined' && typeof this.state.site !== 'undefined') {
-      if (typeof this.state.site.resulting_urls !== 'undefined' &&
-          this.state.site.resulting_urls !== null &&
-          typeof this.props.screenshots[this.state.site.resulting_urls[0]] !== 'undefined' &&
-          this.props.screenshots[this.state.site.resulting_urls[0]] !== null) {
-        screenshots = this.props.screenshots[this.state.site.resulting_urls[0]];
-      }
-    }
-
-    if (typeof this.state !== 'undefined') {
-      return (
-        <div className='SiteDetailsPage'>
-          <h1>
-            <LocationLabel brief={false} level={this.state.site.meta.level} 
-                         type={this.state.site.meta.type} 
-                         district={this.state.site.meta.district}
-                         city={this.state.site.meta.city}
-                         state={this.state.site.meta.state} />
-          </h1>
-
-          <p><SiteIcon icons={this.state.site.icons} /> <a href={ this.state.url } rel='noopener noreferrer' target='_blank'>{ punycode.toUnicode(this.state.url) }</a></p>
-
-          <hr />
-
-          <ScoreComparisonWidget allSites={this.props.sites} thisSite={this.state.site} maxScore={13} />
-
-          <hr />
-          
-          <Screenshots screenshot={screenshots} />
-
-          <hr />
-
-          <div className='row'>
-            <div className='col'>
-              <CMSInfo cms={this.state.site.cms} />
-            </div>
-          </div>
-
-          <hr />
-
-          <ReachableField data={this.state.site.rating.SITE_REACHABLE} />
-          <CanonicalURLField data={this.state.site.rating.CANONICAL_URL} />
-          <HTTPSField data={this.state.site.rating.HTTPS} />
-          <WWWOptionalField data={this.state.site.rating.WWW_OPTIONAL} />
-          <FaviconField data={this.state.site.rating.FAVICON} icons={this.state.site.icons} />
-          <ResponsiveField data={this.state.site.rating.RESPONSIVE} />
-          <FontField data={this.state.site.rating.USE_SPECIFIC_FONTS} />
-          <FeedField data={this.state.site.rating.FEEDS} />
-          <ScriptErrorsField data={this.state.site.rating.NO_SCRIPT_ERRORS} />
-          <NetworkErrorsField data={this.state.site.rating.NO_NETWORK_ERRORS} />
-          <ResponseDurationField data={this.state.site.rating.HTTP_RESPONSE_DURATION} />
-
-        </div>
-      )
-    } else {
-      return (
-        <div className='SiteDetailsPage'>
-          <h1>{ this.url }</h1>
-
-          <p>Daten werden geladen...</p>
-
-        </div>
-      )
-    }
-  }
-}
 export default SiteDetailsPage;
