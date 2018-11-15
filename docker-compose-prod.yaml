@@ -1,0 +1,25 @@
+version: "3"
+services:
+
+  # The static file server and proxy on port 443
+  webapp:
+    image: quay.io/netzbegruenung/green-spider-webapp:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+    - "443:443"
+    volumes:
+      - ".:/workdir"
+      - ${PWD}/config/nginx/nginx_prod.conf:/etc/nginx/nginx.conf
+      - "./test-certs:/etc/letsencrypt/live/green-spider.netzbegruenung.de"
+      - ${PWD}/proxy-cache-prod:/var/cache/nginx
+
+  api:
+    image: quay.io/netzbegruenung/green-spider-api:latest
+    ports:
+    - 5000:5000
+    environment:
+      GCLOUD_DATASTORE_CREDENTIALS_PATH: /secrets/datastore-reader.json
+    volumes:
+      - "./secrets:/secrets"
