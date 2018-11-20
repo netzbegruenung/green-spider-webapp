@@ -25,7 +25,7 @@ a.SitesSearch:hover {
   color: #666;
 }
 
-.URLField {
+.SiteSearch .URLField {
   display: block;
   font-size: 90%;
   color: #999;

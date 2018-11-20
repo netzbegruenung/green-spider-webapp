@@ -20,6 +20,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# cache
+/proxy-cache
+
 # secret key we never want to share
 /secrets
 /test-certs
