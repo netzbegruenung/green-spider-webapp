@@ -6,9 +6,9 @@ import React, { Component } from 'react';
 import { Link } from "react-router-dom";
 import LocationLabel from './LocationLabel';
 import ScoreField from './ScoreField';
+import URLField from './URLField';
 import './SitesSearch.css';
 import history from './history';
-import punycode from 'punycode';
 
 
 class SitesSearch extends Component {
@@ -41,7 +41,7 @@ class SitesSearch extends Component {
             <div className='SitesSearch row'>
               <div className='col-9 col-sm-10 col-md-10'>
                 <LocationLabel level={element.meta.level} type={element.meta.type} district={element.meta.district} city={element.meta.city} state={element.meta.state} truncate={true} />
-                <URLField inputURL={element.input_url} canonicalURLs={element.resulting_urls} />
+                <URLField url={element.input_url} link={false} />
               </div>
               <div className='col-3 col-sm-2 col-md-2 d-flex'>
                 <ScoreField score={element.score} maxScore={13} />
@@ -192,21 +192,6 @@ class SearchFieldPlaceholder extends Component {
         </form>
       </div>
     );
-  }
-}
-
-class URLField extends Component {
-  displayURL(url) {
-    var match = url.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
-    if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
-      return match[2];
-    }
-    return null;
-  }
-
-  render() {
-    var labelURL = this.displayURL(punycode.toUnicode(this.props.inputURL));
-    return <span className='URLField text-truncate'>{ labelURL }</span>;
   }
 }
 

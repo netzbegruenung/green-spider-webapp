@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import LocationLabel from './LocationLabel';
 import ScoreField from './ScoreField';
 import { TypeField, StateField } from './LocationLabel';
+import URLField from './URLField';
 import './SiteDetailsPage.css';
 import axios from 'axios';
 import punycode from 'punycode';
@@ -116,7 +117,7 @@ class SiteDetailsPage extends Component {
                          state={this.state.site.meta.state} />
           </h1>
 
-          <p><SiteIcon site={this.state.site} /> <a href={ this.state.url } rel='noopener noreferrer' target='_blank'>{ punycode.toUnicode(this.state.url) }</a></p>
+          <p><SiteIcon site={this.state.site} /> <URLField url={ this.state.url } showScheme={true} showPath={true} /></p>
 
           <hr />
 
