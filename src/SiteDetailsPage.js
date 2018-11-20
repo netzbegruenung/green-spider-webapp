@@ -73,6 +73,14 @@ class SiteDetailsPage extends Component {
         data: this.state.site.rating.RESPONSIVE,
       },
       {
+        component: <SocialMediaLinksField key='socialmedialink' data={this.state.site.rating.SOCIAL_MEDIA_LINKS} />,
+        data: this.state.site.rating.SOCIAL_MEDIA_LINKS,
+      },
+      {
+        component: <ContactLinkField key='contactlink' data={this.state.site.rating.CONTACT_LINK} />,
+        data: this.state.site.rating.CONTACT_LINK,
+      },
+      {
         component: <FontField key='font' data={this.state.site.rating.USE_SPECIFIC_FONTS} meta={this.state.site.meta}/>,
         data: this.state.site.rating.USE_SPECIFIC_FONTS,
       },
@@ -98,10 +106,12 @@ class SiteDetailsPage extends Component {
     let criteriaDone = [];
 
     for (var criterium of criteria) {
-      if (criterium.data.score === criterium.data.max_score) {
-        criteriaDone.push(criterium.component);
-      } else {
-        criteriaToDo.push(criterium.component);
+      if (criterium.data) {
+        if (criterium.data.score === criterium.data.max_score) {
+          criteriaDone.push(criterium.component);
+        } else {
+          criteriaToDo.push(criterium.component);
+        }
       }
     }
 
@@ -309,6 +319,24 @@ class ResponsiveField extends Component {
       return <CriteriumField keyProp='responsive' type='positive' title='Die Site ist offenbar auf mobilen Endgeräten nutzbar' />
     }
     return <CriteriumField keyProp='responsive' type='negative' title='Mobile Endgeräte sollten unterstützt werden' />
+  }
+}
+
+class ContactLinkField extends Component {
+  render() {
+    if (this.props.data.value) {
+      return <CriteriumField keyProp='contactlink' type='positive' title='Die Site hat einen Link "Kontakt"' />
+    }
+    return <CriteriumField keyProp='contactlink' type='negative' title='Es sollte einen Link namens "Kontakt" geben' />
+  }
+}
+
+class SocialMediaLinksField extends Component {
+  render() {
+    if (this.props.data.value) {
+      return <CriteriumField keyProp='socialmedialinks' type='positive' title='Die Site verlinkt auf Social Media Profile' />
+    }
+    return <CriteriumField keyProp='socialmedialinks' type='negative' title='Es sollte mind. einen Link zu einem Social Media Profil geben' />
   }
 }
 
