@@ -15,6 +15,10 @@
   font-family: 'Arvo', sans-serif;
 }
 
+.SiteDetailsPage .URLField {
+  font-size: 120%;
+}
+
 .SiteDetailsPage {
   margin-bottom: 3rem;
 }
