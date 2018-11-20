@@ -5,7 +5,6 @@ import { TypeField, StateField } from './LocationLabel';
 import URLField from './URLField';
 import './SiteDetailsPage.css';
 import axios from 'axios';
-import punycode from 'punycode';
 
 
 class SiteDetailsPage extends Component {
