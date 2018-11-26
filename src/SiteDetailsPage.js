@@ -146,11 +146,11 @@ class SiteDetailsPage extends Component {
 
           <hr />
 
-          <h3>Empfehlungen</h3>
+          { (criteriaToDo.length > 0) ? <h3>Empfehlungen</h3> : null }
 
           { (criteriaToDo.length > 0) ? criteriaToDo : null }
 
-          <h3>Erledigt</h3>
+          { (criteriaDone.length > 0) ? <h3>Erledigt</h3> : null }
 
           { (criteriaDone.length > 0) ? criteriaDone : null }
 
