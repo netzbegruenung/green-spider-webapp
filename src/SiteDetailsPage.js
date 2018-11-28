@@ -141,6 +141,14 @@ class SiteDetailsPage extends Component {
     }
 
     if (this.state.site !== null) {
+      let channel = 'website-support';
+      let url = this.state.site.checks.url_canonicalization[0];
+      if (this.state.site.checks.generator[url] === 'typo3-gruene') {
+        channel = 'typo3-gruene';
+      }
+      let supportLink = <p className='support-link'>Das sagt Dir nichts, oder Du weißt nicht, wo Du anfangen sollst? Hol Dir Unterstützung im Chatbegrünung-Kanal <a href={'https://chatbegruenung.de/channel/' + channel} rel='noopener noreferrer' target='_blank'>{`#${channel}`}</a>.</p>;
+
+
       return (
         <div className='SiteDetailsPage'>
           <h1>
@@ -180,13 +188,26 @@ class SiteDetailsPage extends Component {
 
           <hr />
 
-          { (criteriaToDo.length > 0) ? <h3>Empfehlungen</h3> : null }
+          {
+            (criteriaToDo.length > 0) ?
+            <div>
+              <h3>Empfehlungen</h3>
+              { criteriaToDo }
+              { supportLink }
+            </div>
+            :
+            null
+          }
 
-          { (criteriaToDo.length > 0) ? criteriaToDo : null }
-
-          { (criteriaDone.length > 0) ? <h3>Erledigt</h3> : null }
-
-          { (criteriaDone.length > 0) ? criteriaDone : null }
+          {
+            (criteriaDone.length > 0) ?
+            <div>
+              <h3>Erledigt</h3>
+              { criteriaDone }
+            </div>
+            :
+            null
+          }
 
           <hr />
 

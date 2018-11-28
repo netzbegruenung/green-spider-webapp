@@ -38,3 +38,7 @@
 .CMSInfo.placeholder {
   color: #999;
 }
+
+.SiteDetailsPage .support-link {
+  margin-top: 1rem;
+}
