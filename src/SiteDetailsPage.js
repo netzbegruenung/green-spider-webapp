@@ -49,54 +49,72 @@ class SiteDetailsPage extends Component {
     // group criteria
     let criteria = [
       {
+        criterium: 'DNS_RESOLVABLE_IPV4',
+        component: <DNSResolvableField key='reachable' data={this.state.site.rating.DNS_RESOLVABLE_IPV4} />,
+        data: this.state.site.rating.DNS_RESOLVABLE_IPV4,
+      },
+      {
+        criterium: 'SITE_REACHABLE',
         component: <ReachableField key='reachable' data={this.state.site.rating.SITE_REACHABLE} />,
         data: this.state.site.rating.SITE_REACHABLE,
       },
       {
+        criterium: 'CANONICAL_URL',
         component: <CanonicalURLField key='canonicalurl' data={this.state.site.rating.CANONICAL_URL} />,
         data: this.state.site.rating.CANONICAL_URL,
       },
       {
+        criterium: 'HTTPS',
         component: <HTTPSField key='https' data={this.state.site.rating.HTTPS} />,
         data: this.state.site.rating.HTTPS,
       },
       {
+        criterium: 'WWW_OPTIONAL',
         component: <WWWOptionalField key='wwwoptional' data={this.state.site.rating.WWW_OPTIONAL} />,
         data: this.state.site.rating.WWW_OPTIONAL,
       },
       {
+        criterium: 'FAVICON',
         component: <FaviconField key='favicon' data={this.state.site.rating.FAVICON} />,
         data: this.state.site.rating.FAVICON,
       },
       {
+        criterium: 'RESPONSIVE',
         component: <ResponsiveField key='responsive' data={this.state.site.rating.RESPONSIVE} />,
         data: this.state.site.rating.RESPONSIVE,
       },
       {
+        criterium: 'SOCIAL_MEDIA_LINKS',
         component: <SocialMediaLinksField key='socialmedialink' data={this.state.site.rating.SOCIAL_MEDIA_LINKS} />,
         data: this.state.site.rating.SOCIAL_MEDIA_LINKS,
       },
       {
+        criterium: 'CONTACT_LINK',
         component: <ContactLinkField key='contactlink' data={this.state.site.rating.CONTACT_LINK} />,
         data: this.state.site.rating.CONTACT_LINK,
       },
       {
+        criterium: 'USE_SPECIFIC_FONTS',
         component: <FontField key='font' data={this.state.site.rating.USE_SPECIFIC_FONTS} meta={this.state.site.meta}/>,
         data: this.state.site.rating.USE_SPECIFIC_FONTS,
       },
       {
+        criterium: 'FEEDS',
         component: <FeedField key='feed' data={this.state.site.rating.FEEDS} />,
         data: this.state.site.rating.FEEDS,
       },
       {
+        criterium: 'NO_SCRIPT_ERRORS',
         component: <ScriptErrorsField key='scripterrors' data={this.state.site.rating.NO_SCRIPT_ERRORS} />,
         data: this.state.site.rating.NO_SCRIPT_ERRORS,
       },
       {
+        criterium: 'NO_NETWORK_ERRORS',
         component: <NetworkErrorsField key='networkerrors' data={this.state.site.rating.NO_NETWORK_ERRORS} />,
         data: this.state.site.rating.NO_NETWORK_ERRORS,
       },
       {
+        criterium: 'HTTP_RESPONSE_DURATION',
         component: <ResponseDurationField key='responseduration' data={this.state.site.rating.HTTP_RESPONSE_DURATION} />,
         data: this.state.site.rating.HTTP_RESPONSE_DURATION,
       },
@@ -110,6 +128,13 @@ class SiteDetailsPage extends Component {
         if (criterium.data.score === criterium.data.max_score) {
           criteriaDone.push(criterium.component);
         } else {
+          // if the site is not reachable, that's all we want to display.
+          if (this.state.site.rating.SITE_REACHABLE.value === false) {
+            if (criterium.criterium !== 'DNS_RESOLVABLE_IPV4' && criterium.criterium !== 'SITE_REACHABLE') {
+              continue;
+            }
+          }
+
           criteriaToDo.push(criterium.component);
         }
       }
@@ -132,17 +157,26 @@ class SiteDetailsPage extends Component {
 
           <ScoreComparisonWidget allSites={this.props.sitesHash} thisSite={this.state.site} maxScore={13} />
 
-          <hr />
-          
-          <Screenshots urls={this.state.site.checks.url_canonicalization} lastUpdated={this.props.lastUpdated}/>
-
-          <hr />
-
-          <div className='row'>
-            <div className='col'>
-              <CMSInfo site={this.state.site} />
+          {
+            this.state.site.rating.SITE_REACHABLE.value ?
+            <div>
+              <hr />
+              <Screenshots urls={this.state.site.checks.url_canonicalization} lastUpdated={this.props.lastUpdated}/>
             </div>
-          </div>
+            : null
+          }
+
+          {
+            this.state.site.rating.SITE_REACHABLE.value ?
+            <div className='row'>
+              <div className='col'>
+                <hr />
+                <CMSInfo site={this.state.site} />
+              </div>
+            </div>
+            : null
+          }
+          
 
           <hr />
 
@@ -238,6 +272,14 @@ class CMSInfo extends Component {
   }
 }
 
+class DNSResolvableField extends Component {
+  render() {
+    if (this.props.data.value) {
+      return <CriteriumField keyProp='dnsresolvable' type='positive' title='Es existiert ein DNS-Eintrag für den Host- bzw. Domainnamen' />
+    }
+    return <CriteriumField keyProp='dnsresolvable' type='negative' title='Die Domain bzw. der Hostname benötigt einen DNS-Eintrag' />
+  }
+}
 
 class FaviconField extends Component {
   render() {
