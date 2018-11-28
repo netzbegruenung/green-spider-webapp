@@ -219,10 +219,18 @@ class IconBad extends Component {
   }
 }
 
+class IconOptimize extends Component {
+  render() {
+    return <i className='icon ion-md-construct align-middle'></i>;
+  }
+}
+
 class CriteriumField extends Component {
   render() {
     if (this.props.type === 'positive') {
       return <div key={this.props.keyProp} className='good'><IconGood /> <span className='align-middle'>{this.props.title}</span></div>;
+    } else if (this.props.type === 'mediocre') {
+      return <div key={this.props.keyProp} className='mediocre'>{ this.props.icon ? this.props.icon : <IconOptimize /> }<span className='align-middle'>{this.props.title}</span></div>;
     } else {
       return <div key={this.props.keyProp} className='bad'><IconBad /> <span className='align-middle'>{this.props.title}</span></div>;
     }
@@ -232,9 +240,9 @@ class CriteriumField extends Component {
 class CanonicalURLField extends Component {
   render() {
     if (this.props.data.value) {
-      return <CriteriumField keyProp='canonicalurl' type='positive' title='Verschiedene URL-Varianten werden auf eine einzige umgeleitet' />
+      return <CriteriumField keyProp='canonicalurl' type='positive' title='Verschiedene URL-Varianten werden auf eine einzige umgeleitet' />;
     }
-    return <CriteriumField keyProp='canonicalurl' type='negative' title='Verschiedene URL-Varianten sollten auf eine einzige umgeleitet werden' />
+    return <CriteriumField keyProp='canonicalurl' type='negative' title='Verschiedene URL-Varianten sollten auf eine einzige umgeleitet werden' />;
   }
 }
 
@@ -321,66 +329,59 @@ class FontField extends Component {
 class HTTPSField extends Component {
   render() {
     if (this.props.data.value) {
-      return <CriteriumField keyProp='https' type='positive' title='Die Site ist über HTTPS erreichbar' />
+      return <CriteriumField keyProp='https' type='positive' title='Die Site ist über HTTPS erreichbar' />;
     }
-    return <CriteriumField keyProp='https' type='negative' title='Die Site sollte über HTTPS erreichbar sein' />
+    return <CriteriumField keyProp='https' type='negative' title='Die Site sollte über HTTPS erreichbar sein' />;
   }
 }
 
 class ResponseDurationField extends Component {
   render() {
-    var icon = <i className='icon ion-md-speedometer align-middle'></i>;
-    var className = 'bad text';
-    if (this.props.data.score > 0) {
-      className = 'mediocre text';
-    }
-    if (this.props.data.score > 0.5) {
-      className = 'good text';
-    }
-
     if (this.props.data.score === this.props.data.max_score) {
-      return <div className={className}>{icon} <span className='align-middle'>Server Antwortzeit ist sehr kurz ({ this.props.data.value } ms)</span></div>;
+      return <CriteriumField keyProp='duration' type='positive' title={`Server-Antwortzeit ist sehr kurz (${ this.props.data.value } ms)`} />;
     } else if (this.props.data.score >= 0) {
-      return <div className={className}>{icon} <span className='align-middle'>Server Antwortzeit verkürzen ({ this.props.data.value } ms)</span></div>;
+      return <CriteriumField keyProp='duration' type='mediocre' title={`Server-Antwortzeit verkürzen (${ this.props.data.value } ms)`} />;
     }
 
-    return <CriteriumField keyProp='duration' type='negative' title='Server Antwortzeit: Keine Angabe' />
+    return <CriteriumField keyProp='duration' type='negative' title='Server-Antwortzeit: Keine Angabe' />;
   }
 }
 
 class ReachableField extends Component {
   render() {
     if (this.props.data.value) {
-      return <CriteriumField keyProp='reachable' type='positive' title='Die Site war beim Test erreichbar' />
+      return <CriteriumField keyProp='reachable' type='positive' title='Die Site war beim Test erreichbar' />;
     }
-    return <CriteriumField keyProp='reachable' type='negative' title='Die Site war beim letzten Test nicht erreichbar' />
+    return <CriteriumField keyProp='reachable' type='negative' title='Die Site war beim letzten Test nicht erreichbar' />;
   }
 }
 
 class ResponsiveField extends Component {
   render() {
-    if (this.props.data.value) {
-      return <CriteriumField keyProp='responsive' type='positive' title='Die Site ist offenbar auf mobilen Endgeräten nutzbar' />
+    if (this.props.data.score === this.props.data.max_score) {
+      return <CriteriumField keyProp='responsive' type='positive' title='Die Site ist offenbar auf mobilen Endgeräten nutzbar' />;
+    } else if (this.props.data.score > 0) {
+      return <CriteriumField keyProp='responsive' type='mediocre' title='Mobile Endgeräte könnten noch besser unterstützt werden' />;
     }
-    return <CriteriumField keyProp='responsive' type='negative' title='Mobile Endgeräte sollten unterstützt werden' />
+    return <CriteriumField keyProp='responsive' type='negative' title='Mobile Endgeräte sollten unterstützt werden' />;
   }
 }
 
 class ContactLinkField extends Component {
   render() {
     if (this.props.data.value) {
-      return <CriteriumField keyProp='contactlink' type='positive' title='Die Site hat einen Link "Kontakt"' />
+      return <CriteriumField keyProp='contactlink' type='positive' title='Die Site hat einen Link "Kontakt"' />;
     }
-    return <CriteriumField keyProp='contactlink' type='negative' title='Es sollte einen Link namens "Kontakt" geben' />
+    return <CriteriumField keyProp='contactlink' type='negative' title='Es sollte einen Link namens "Kontakt" geben' />;
   }
 }
 
 class SocialMediaLinksField extends Component {
   render() {
     if (this.props.data.value) {
-      return <CriteriumField keyProp='socialmedialinks' type='positive' title='Die Site verlinkt auf Social Media Profile' />
+      return <CriteriumField keyProp='socialmedialinks' type='positive' title='Die Site verlinkt auf Social Media Profile' />;
     }
-    return <CriteriumField keyProp='socialmedialinks' type='negative' title='Es sollte mind. einen Link zu einem Social Media Profil geben' />
+    return <CriteriumField keyProp='socialmedialinks' type='negative' title='Es sollte mind. einen Link zu einem Social Media Profil geben' />;
   }
 }
 
