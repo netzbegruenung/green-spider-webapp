@@ -245,6 +245,8 @@ class CMSInfo extends Component {
       'typo3-gcms': <a href='https://gruenes-cms.de/' target='_blank' rel='noopener noreferrer'>Grünes CMS (Typo3)</a>,
       'typo3-gruene': <a href='https://typo3-gruene.de/' target='_blank' rel='noopener noreferrer'>Typo3 Grüne</a>,
       'wordpress': <a href='https://wordpress.org/' target='_blank' rel='noopener noreferrer'>Wordpress</a>,
+      'wordpress-blumomatic': <a href='https://www.urwahl3000.de/blum-o-matic/' target='_blank' rel='noopener noreferrer'>Wordpress mit Blum-O-Matic</a>,
+      'wordpress-gruenes-internet': <a href='https://www.gruenes-internet.de/' target='_blank' rel='noopener noreferrer'>Grünes Internet (Wordpress)</a>,
       'wordpress-urwahl': <a href='https://www.urwahl3000.de/' target='_blank' rel='noopener noreferrer'>Wordpress mit Urwahl3000</a>,
       'wordpress-josephknowsbest': <a href='https://github.com/kre8tiv/Joseph-knows-best' target='_blank' rel='noopener noreferrer'>Wordpress mit Joseph Knows Best</a>,
     };
