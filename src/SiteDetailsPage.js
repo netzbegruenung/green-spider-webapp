@@ -142,9 +142,11 @@ class SiteDetailsPage extends Component {
 
     if (this.state.site !== null) {
       let channel = 'website-support';
-      let url = this.state.site.checks.url_canonicalization[0];
-      if (this.state.site.checks.generator[url] === 'typo3-gruene') {
-        channel = 'typo3-gruene';
+      if (typeof this.state.site.checks.url_canonicalization === 'object' && typeof this.state.site.checks.url_canonicalization.length > 0) {
+        let url = this.state.site.checks.url_canonicalization[0];
+        if (typeof this.state.site.checks.generator === 'object' && this.state.site.checks.generator[url] === 'typo3-gruene') {
+          channel = 'typo3-gruene';
+        }
       }
       let supportLink = <p className='support-link'>Das sagt Dir nichts, oder Du weißt nicht, wo Du anfangen sollst? Hol Dir Unterstützung im Chatbegrünung-Kanal <a href={'https://chatbegruenung.de/channel/' + channel} rel='noopener noreferrer' target='_blank'>{`#${channel}`}</a>.</p>;
 
