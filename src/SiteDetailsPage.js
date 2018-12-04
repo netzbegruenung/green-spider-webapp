@@ -165,7 +165,7 @@ class SiteDetailsPage extends Component {
 
           <hr />
 
-          <ScoreComparisonWidget allSites={this.props.sitesHash} thisSite={this.state.site} maxScore={13} />
+          <ScoreComparisonWidget allSites={this.props.sitesHash} thisSite={this.state.site} maxScore={15} />
 
           {
             this.state.site.rating.SITE_REACHABLE.value ?

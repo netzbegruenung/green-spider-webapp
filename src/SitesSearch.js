@@ -26,6 +26,10 @@ class SitesSearch extends Component {
   }
 
   searchResultCallback(result) {
+    // sort result by score
+    if (result) {
+      result.sort((a, b) => (this.props.sitesHash[b.ref].score > this.props.sitesHash[a.ref].score) ? 1 : ((this.props.sitesHash[a.ref].score > this.props.sitesHash[b.ref].score) ? -1 : 0));
+    }
     this.setState({searchResult: result});
   }
 
@@ -44,7 +48,7 @@ class SitesSearch extends Component {
                 <URLField url={element.input_url} link={false} />
               </div>
               <div className='col-3 col-sm-2 col-md-2 d-flex'>
-                <ScoreField score={element.score} maxScore={13} />
+                <ScoreField score={element.score} maxScore={15} />
               </div>
             </div>
           </Link>
