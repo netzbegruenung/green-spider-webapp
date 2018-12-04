@@ -50,7 +50,7 @@ class SiteDetailsPage extends Component {
     let criteria = [
       {
         criterium: 'DNS_RESOLVABLE_IPV4',
-        component: <DNSResolvableField key='reachable' data={this.state.site.rating.DNS_RESOLVABLE_IPV4} />,
+        component: <DNSResolvableField key='dnsresolvable' data={this.state.site.rating.DNS_RESOLVABLE_IPV4} />,
         data: this.state.site.rating.DNS_RESOLVABLE_IPV4,
       },
       {
