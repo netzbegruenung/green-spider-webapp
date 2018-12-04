@@ -142,10 +142,18 @@ class SiteDetailsPage extends Component {
 
     if (this.state.site !== null) {
       let channel = 'website-support';
-      if (typeof this.state.site.checks.url_canonicalization === 'object' && typeof this.state.site.checks.url_canonicalization.length > 0) {
+      if (typeof this.state.site.checks.url_canonicalization === 'object' 
+        && this.state.site.checks.url_canonicalization.length > 0
+        && typeof this.state.site.checks.generator === 'object') {
+
         let url = this.state.site.checks.url_canonicalization[0];
-        if (typeof this.state.site.checks.generator === 'object' && this.state.site.checks.generator[url] === 'typo3-gruene') {
+
+        if (this.state.site.checks.generator[url] === 'typo3-gruene') {
           channel = 'typo3-gruene';
+        } else if (this.state.site.checks.generator[url] === 'wordpress-urwahl') {
+          channel = 'urwahl3000';
+        } else if (this.state.site.checks.generator[url] === 'wordpress-gruenes-internet') {
+          channel = 'gruenes-internet-de';
         }
       }
       let supportLink = <p className='support-link'>Das sagt Dir nichts, oder Du weißt nicht, wo Du anfangen sollst? Hol Dir Unterstützung im Chatbegrünung-Kanal <a href={'https://chatbegruenung.de/channel/' + channel} rel='noopener noreferrer' target='_blank'>{`#${channel}`}</a>.</p>;
