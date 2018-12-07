@@ -5,6 +5,7 @@ import { TypeField, StateField } from './LocationLabel';
 import URLField from './URLField';
 import './SiteDetailsPage.css';
 import axios from 'axios';
+import _ from 'underscore';
 
 
 class SiteDetailsPage extends Component {
@@ -124,17 +125,17 @@ class SiteDetailsPage extends Component {
     let criteriaDone = [];
 
     for (var criterium of criteria) {
+      if (this.state.site.rating.SITE_REACHABLE.value === false) {
+        // if the site is not reachable, that's all we want to display.
+        if (criterium.criterium !== 'DNS_RESOLVABLE_IPV4' && criterium.criterium !== 'SITE_REACHABLE') {
+          continue;
+        }
+      }
+
       if (criterium.data) {
         if (criterium.data.score === criterium.data.max_score) {
           criteriaDone.push(criterium.component);
         } else {
-          // if the site is not reachable, that's all we want to display.
-          if (this.state.site.rating.SITE_REACHABLE.value === false) {
-            if (criterium.criterium !== 'DNS_RESOLVABLE_IPV4' && criterium.criterium !== 'SITE_REACHABLE') {
-              continue;
-            }
-          }
-
           criteriaToDo.push(criterium.component);
         }
       }
@@ -157,7 +158,6 @@ class SiteDetailsPage extends Component {
         }
       }
       let supportLink = <p className='support-link'>Das sagt Dir nichts, oder Du weißt nicht, wo Du anfangen sollst? Hol Dir Unterstützung im Chatbegrünung-Kanal <a href={'https://chatbegruenung.de/channel/' + channel} rel='noopener noreferrer' target='_blank'>{`#${channel}`}</a>.</p>;
-
 
       return (
         <div className='SiteDetailsPage'>
@@ -185,7 +185,7 @@ class SiteDetailsPage extends Component {
           }
 
           {
-            this.state.site.rating.SITE_REACHABLE.value ?
+            this.state.site.rating.DNS_RESOLVABLE_IPV4.value ?
             <div className='row'>
               <div className='col'>
                 <hr />
@@ -290,7 +290,17 @@ class CMSInfo extends Component {
       'wordpress-josephknowsbest': <a href='https://github.com/kre8tiv/Joseph-knows-best' target='_blank' rel='noopener noreferrer'>Wordpress mit Joseph Knows Best</a>,
     };
 
-    let placeholder = <span className='CMSInfo placeholder'><em><abbr title='Content Management System'>CMS</abbr> wurde nicht erkannt</em></span>;
+    // collect IPs
+    let ips = [];
+    for (let url of Object.keys(this.props.site.checks.dns_resolution)) {
+      if (typeof this.props.site.checks.dns_resolution[url].ipv4_addresses === 'object') {
+        ips = _.union(ips, this.props.site.checks.dns_resolution[url].ipv4_addresses);
+      };
+    }
+    ips = _.uniq(ips);
+    let ipinfo = _.map(ips, (ip) => { return <a href={`https://de.infobyip.com/ip-${ ip }.html`} key={'ip' + ip }>{ ip }</a>; });
+
+    let placeholder = <span className='CMSInfo placeholder'>IP: { ipinfo } - <em><abbr title='Content Management System'>CMS</abbr> wurde nicht erkannt</em></span>;
 
     if (typeof this.props.site === 'undefined' || this.props.site === null) {
       return placeholder;
@@ -309,7 +319,7 @@ class CMSInfo extends Component {
       label = wellknownCMS[label];
     }
 
-    return <span className='CMSInfo'>Die Site wird erstellt mit { label }</span>;
+    return <span className='CMSInfo'>Die Site wird erstellt mit { label }. IP: { ipinfo }</span>;
   }
 }
 
