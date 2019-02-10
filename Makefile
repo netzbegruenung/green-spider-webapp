@@ -1,15 +1,9 @@
 
 IMAGE := quay.io/netzbegruenung/green-spider:latest
 
-
 # Build the web application to be served by a static web server
 build:
 	yarn build
-
-# Copy build output to the /docs folder where it's served by Github pages
-dist: build
-	rm -rf docs
-	cp -r build docs
 
 # Run a development server on http://localhost:8000
 dev:
