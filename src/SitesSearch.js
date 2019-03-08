@@ -139,7 +139,7 @@ class SearchField extends Component {
     this.setState({value: q});
 
     if (q.length > minTermLength && q !== this.state.lastQuery) {
-      var searchResult = this.props.searchIndex.search(q + "*");
+      var searchResult = this.props.searchIndex.search(q.trim() + "*");
       this.setState({
         lastQuery: q,
         hits: searchResult.length,

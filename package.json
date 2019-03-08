@@ -32,7 +32,7 @@
     "html-webpack-plugin": "2.29.0",
     "jest": "20.0.4",
     "lodash": "^4.17.11",
-    "lunr": "^2.3.4",
+    "lunr": "^2.3.6",
     "merge": "1.2.1",
     "object-assign": "4.1.1",
     "postcss-flexbugs-fixes": "3.2.0",
