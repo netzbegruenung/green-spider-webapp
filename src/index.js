@@ -62,17 +62,22 @@ class App extends React.Component {
       })
   }
 
+  tokenizeURL = (url) => {
+    return url.replace(/[:.-/]+/gi, ' ');
+  }
+
   createSearchIndex = (sites) => {
+    var tu = this.tokenizeURL;
     let searchIndex = lunr(function() {
       this.field('url');
       this.field('state');
       this.field('district');
       this.field('city');
-    
+
       for (var site of sites) {
         this.add({
           "id": site.input_url,
-          "url": [site.input_url],
+          "url": tu(site.input_url),
           "state": site.meta.state,
           "district": site.meta.district,
           "city": site.meta.city,
