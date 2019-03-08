@@ -69,6 +69,9 @@ class App extends React.Component {
   createSearchIndex = (sites) => {
     var tu = this.tokenizeURL;
     let searchIndex = lunr(function() {
+      this.pipeline.remove(lunr.stemmer)
+      this.searchPipeline.remove(lunr.stemmer)
+
       this.field('url');
       this.field('state');
       this.field('district');
