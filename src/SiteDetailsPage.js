@@ -492,13 +492,13 @@ class Screenshots extends Component {
     }
     
     var mobile = (
-      <a className='screenshot' href={this.state.screenshots.mobile.screenshot_url} target='_blank' title='Screenshot für Smartphone-Ansicht anzeigen'>
+      <a className='screenshot' href={this.state.screenshots.mobile.screenshot_url} target='_blank' rel='noopener noreferrer' title='Screenshot für Smartphone-Ansicht anzeigen'>
         <img className='screenshot' src={this.state.screenshots.mobile.screenshot_url} width='100%' alt='Mobile Screenshot' />
       </a>
     );
 
     var desktop = (
-      <a className='screenshot' href={this.state.screenshots.desktop.screenshot_url} target='_blank' title='Screenshot für Desktop-Ansicht anzeigen'>
+      <a className='screenshot' href={this.state.screenshots.desktop.screenshot_url} target='_blank' rel='noopener noreferrer' title='Screenshot für Desktop-Ansicht anzeigen'>
         <img className='screenshot' src={this.state.screenshots.desktop.screenshot_url} width='100%' alt='Desktop Screenshot' />
       </a>
     );
