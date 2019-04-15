@@ -30,3 +30,26 @@ services:
       GCLOUD_DATASTORE_CREDENTIALS_PATH: /secrets/datastore-reader.json
     volumes:
       - "./secrets:/secrets"
+    depends_on:
+      - elasticsearch
+
+  elasticsearch:
+    image: elasticsearch:5.6-alpine
+    environment:
+      - cluster.name=green-spider
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+    ports:
+    - 9200:9200
+    restart: always
+    volumes:
+      - $PWD/elasticsearch:/usr/share/elasticsearch/data
+
+  indexer:
+    image: quay.io/netzbegruenung/green-spider-indexer:latest
+    volumes:
+    - $PWD/secrets:/etc/indexer
+    environment:
+    - GCLOUD_DATASTORE_CREDENTIALS_PATH=/etc/indexer/datastore-reader.json
+    restart: "no"

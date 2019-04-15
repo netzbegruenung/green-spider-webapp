@@ -1,67 +1,142 @@
-/**
- * The ResultsTable component is a table of results for all websites we checked.
- */
-
+import axios from 'axios';
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
 import LocationLabel from './LocationLabel';
+import SearchForm from './SearchForm';
 import ScoreField from './ScoreField';
 import URLField from './URLField';
 import './SitesSearch.css';
 import history from './history';
+import InfiniteScroll from 'react-infinite-scroller';
 
 
 class SitesSearch extends Component {
-  constructor(props) {
-    super(props);
+  itemsPerPage = 20;
 
-    this.state = {
-      loading: true,
-      sitesHash: null,
-      searchIndex: null,
-      searchResult: null,
-    };
+  state = {
+    loading: false,
+    searchResultItems: [],
+    query: null,
+    userQuery: '',
+    hits: 0,
+    pageLoaded: null,
+  };
 
-    this.searchResultCallback = this.searchResultCallback.bind(this);
-  }
-
-  searchResultCallback(result) {
-    // sort result by score
-    if (result) {
-      result.sort((a, b) => (this.props.sitesHash[b.ref].score > this.props.sitesHash[a.ref].score) ? 1 : ((this.props.sitesHash[a.ref].score > this.props.sitesHash[b.ref].score) ? -1 : 0));
+  componentDidMount() {
+    // init search from URL
+    let params = (new URL(document.location)).searchParams;
+    if (typeof params === 'object') {
+      let q = params.get('q');
+      if (q !== null && q !== '') {
+        this.doSearch(q);
+      }
     }
-    this.setState({searchResult: result});
   }
+
+  /**
+   * Performs the search based user input or URL parameter
+   * and fetches the first results page
+   */
+  doSearch = (q) => {
+    var minTermLength = 1;
+    
+    if (q === '') {
+      history.push(`/`);
+    } else {
+      history.push(`/?q=${q}`);
+    }
+
+    if (q.length > minTermLength) {
+      // append '*' if last character is not
+      var esQuery = q.trim();
+      if (esQuery.substr(esQuery.length - 1) !== '*') {
+        esQuery += '*';
+      }
+
+      if (q !== this.state.query) {
+        this.setState({
+          query: esQuery,
+          userQuery: q,
+          searchResultItems: [],
+          pageLoaded: null,
+        });
+      } else {
+        this.setState({
+          query: esQuery,
+          userQuery: q,
+        });
+      }
+
+      this.getResultsPage(esQuery, 0);
+    } else if (q.length <= minTermLength) {
+      this.setState({
+        query: null,
+        userQuery: q,
+        hits: 0,
+        searchResultItems: [],
+      });
+    }
+  };
+
+  getResultsPage = (term, page) => {
+    var from = page * this.itemsPerPage;
+    axios.get('/api/v1/spider-results/query/?from=' + from + '&q=' + encodeURI(term))
+        .then((response) => {
+          var allResultItems = [];
+          
+          // if the term has not changed, append result items
+          if (term === this.state.query) {
+            allResultItems = this.state.searchResultItems;
+          }
+
+          response.data.hits.hits.forEach((item) => {
+            allResultItems.push(item);
+          });
+
+          this.setState({
+            searchResultItems: allResultItems,
+            hits: response.data.hits.total,
+            pageLoaded: page,
+          });
+        });
+  }
+
+  loadFunc = (pageNum) => {
+    this.getResultsPage(this.state.query, pageNum);
+  };
+
+  hasMoreFunc = () => {
+    var result = (this.itemsPerPage * this.state.pageLoaded) < this.state.hits;
+    return result;
+  };
 
   render() {
     var rows = [];
 
-    if (this.state.searchResult) {
-      for (var site of this.state.searchResult) {
-        var element = this.props.sitesHash[site.ref];
-
+    if (this.state.searchResultItems.length > 0) {
+      this.state.searchResultItems.forEach((site) => {
         var row = (
-          <Link key={element.input_url} to={`/sites/${ encodeURIComponent(element.input_url) }`} className='SitesSearch'>
+          <Link key={site._source.url} to={`/sites/${ encodeURIComponent(site._source.url) }`} className='SitesSearch'>
             <div className='SitesSearch row'>
               <div className='col-9 col-sm-10 col-md-10'>
-                <LocationLabel level={element.meta.level} type={element.meta.type} district={element.meta.district} city={element.meta.city} state={element.meta.state} truncate={true} />
-                <URLField url={element.input_url} link={false} />
+                <LocationLabel level={site._source.meta.level} type={site._source.meta.type} district={site._source.meta.district} city={site._source.meta.city} state={site._source.meta.state} truncate={true} />
+                <URLField url={site._source.url} link={false} />
               </div>
               <div className='col-3 col-sm-2 col-md-2 d-flex'>
-                <ScoreField score={element.score} maxScore={15} />
+                <ScoreField score={site._source.score} maxScore={15} />
               </div>
             </div>
           </Link>
         );
 
         rows.push(row);
-      }
+      });
     }
 
     var placeholder = (
       <div className='row placeholder' key='placeholder'>
         <div className='col-12 text-center'>
-          Vergleiche Deine GRÜNE Website mit { this.props.sitesHash ? Object.keys(this.props.sitesHash).length : 'vielen'} anderen und erfahre, was Du verbessern kannst.
+          Vergleiche Deine GRÜNE Website mit { this.props.sitesCount ? this.props.sitesCount : 'vielen'} anderen und erfahre, was Du verbessern kannst.
         </div>
       </div>
     );
@@ -78,7 +153,15 @@ class SitesSearch extends Component {
     var resultFound = (
       <div className='row results'>
           <div className='col-12'>
-            {rows}
+            <InfiniteScroll
+              pageStart={0}
+              loadMore={this.loadFunc}
+              hasMore={this.hasMoreFunc()}
+              loader={<div className="loader" key={0}>Lade weitere Treffer...</div>}
+              threshold={250}
+            >
+              {rows}
+            </InfiniteScroll>
           </div>
         </div>
     );
@@ -87,11 +170,10 @@ class SitesSearch extends Component {
       <div>
         <div className='row searchInputRow'>
           <div className='col-12'>
-            { this.props.searchIndex ? 
-            <SearchField searchIndex={this.props.searchIndex} callback={this.searchResultCallback} />
-            :
-            <SearchFieldPlaceholder />
-            }
+            <SearchForm
+              callback={this.doSearch}
+              value={this.state.userQuery}
+              hits={this.state.hits} />
           </div>
         </div>
         { rows.length ? resultFound : noresult }
@@ -99,105 +181,5 @@ class SitesSearch extends Component {
     );
   }
 }
-
-
-class SearchField extends Component {
-  state = {
-    value: '',
-    lastQuery: '',
-    hits: 0,
-  }
-
-  constructor(props) {
-    super(props);
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.doSearch = this.doSearch.bind(this);
-  }
-
-  componentDidMount() {
-    // init search from URL
-    let params = (new URL(document.location)).searchParams;
-    if (typeof params === 'object') {
-      let q = params.get('q');
-      if (q !== null && q !== '') {
-        this.doSearch(q);
-      }
-    }
-  }
-
-  doSearch(q) {
-    var minTermLength = 1;
-    
-    if (q === '') {
-      history.push(`/`);
-    } else {
-      history.push(`/?q=${q}`);
-    }
-
-    this.setState({value: q});
-
-    if (q.length > minTermLength && q !== this.state.lastQuery) {
-      var searchResult = this.props.searchIndex.search(q.trim() + "*");
-      this.setState({
-        lastQuery: q,
-        hits: searchResult.length,
-      });
-      this.props.callback(searchResult);
-    } else if (q.length <= minTermLength) {
-      this.setState({
-        lastQuery: q,
-        hits: 0,
-      });
-      this.props.callback(null);
-    }
-  }
-
-  handleChange(event) {
-    var q = event.target.value;
-    this.doSearch(q);
-  }
-
-  handleSubmit(event) {
-    event.preventDefault();
-  }
-
-  render() {
-    var hitsInfo = <span>&nbsp;</span>;
-    if (this.state.lastQuery !== '') {
-      hitsInfo = <span>{this.state.hits} Treffer</span>;
-    }
-
-    return (
-      <div className='col-12'>
-        <form onSubmit={this.handleSubmit}>
-          <div className='form-group'>
-            <label htmlFor='queryInput'>Finde Deine Site</label>
-            <input className='form-control' type='search' name='query' placeholder="Finde Deine Site" value={this.state.value} onChange={this.handleChange} id='queryInput' />
-            <small className='form-text'>{hitsInfo}</small>
-          </div>
-        </form>
-      </div>
-    );
-  }
-}
-
-class SearchFieldPlaceholder extends Component {
-  render() {
-    return (
-      <div className='col-12'>
-        <form onSubmit={this.handleSubmit}>
-          <div className='form-group'>
-            <label htmlFor='queryInput'>Finde Deine Site</label>
-            <input className='form-control' type='search' name='query' placeholder="Daten werden geladen..." value={this.props.value} disabled={true} />
-            <small className='form-text'>&nbsp;</small>
-          </div>
-        </form>
-      </div>
-    );
-  }
-}
-
 
 export default SitesSearch;
