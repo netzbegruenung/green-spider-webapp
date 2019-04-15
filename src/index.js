@@ -7,7 +7,6 @@ import './index.css';
 import NavBar from './NavBar';
 import SitesSearch from './SitesSearch';
 import SiteDetailsPage from './SiteDetailsPage';
-import registerServiceWorker from './registerServiceWorker';
 import history from './history';
 
 
@@ -56,5 +55,3 @@ class App extends React.Component {
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));
-
-registerServiceWorker();
