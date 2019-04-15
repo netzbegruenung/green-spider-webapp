@@ -52,4 +52,4 @@ services:
     - $PWD/secrets:/etc/indexer
     environment:
     - GCLOUD_DATASTORE_CREDENTIALS_PATH=/etc/indexer/datastore-reader.json
-    restart: "no"
+    restart: on-failure
