@@ -55,3 +55,14 @@ class App extends React.Component {
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));
+
+
+// temporary: unregister old service eorker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations()
+    .then((registrations) => {
+        for (let registration of registrations) {  
+            registration.unregister();
+        }
+    });
+}
