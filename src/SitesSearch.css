@@ -75,3 +75,20 @@ input[type="search"]::-webkit-search-cancel-button {
 .row.results {
   margin-top: 1rem;
 }
+
+.row.favs {
+  background-color: #edf2e4;
+  padding: 20px 0;
+}
+
+.row.favs h2 {
+  font-family: Arvo, sans-serif;
+  padding-left: 14px;
+  padding-bottom: 5px;
+  font-size: 24px;
+  color: #333;
+}
+.row.favs .truncate-info {
+  margin-top: 20px;
+  font-size: 0.9em;
+}
