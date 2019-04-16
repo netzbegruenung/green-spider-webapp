@@ -59,10 +59,7 @@ ReactDOM.render(<App />, document.getElementById('root'));
 
 // temporary: unregister old service eorker
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations()
-    .then((registrations) => {
-        for (let registration of registrations) {  
-            registration.unregister();
-        }
-    });
+  navigator.serviceWorker.ready.then(registration => {
+    registration.unregister();
+  });
 }
