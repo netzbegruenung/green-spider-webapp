@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+import { TypeField, StateField } from './LocationLabel';
+import FavouriteAddRemove from './FavouriteAddRemove';
 import LocationLabel from './LocationLabel';
 import ScoreField from './ScoreField';
-import { TypeField, StateField } from './LocationLabel';
 import URLField from './URLField';
 import './SiteDetailsPage.css';
 import axios from 'axios';
@@ -227,6 +228,10 @@ class SiteDetailsPage extends Component {
             :
             null
           }
+
+          <hr />
+
+          <FavouriteAddRemove site={this.state.site} />
 
           <hr />
 
