@@ -34,3 +34,12 @@ h5 a {
 abbr[title], abbr[data-original-title] {
   text-decoration: none;
 }
+
+button.btn-primary {
+  background-color: #46962b;
+  border-color: #46962b;
+}
+button.btn-primary:hover {
+  background-color: #61aa48;
+  border-color: #61aa48;
+}

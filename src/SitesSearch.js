@@ -1,17 +1,18 @@
+import { Favorites } from './lib/Favorites';
+import FavoritesList from './FavoritesList';
 import axios from 'axios';
 import React, { Component } from 'react';
-import { Link } from "react-router-dom";
-import LocationLabel from './LocationLabel';
 import SearchForm from './SearchForm';
-import ScoreField from './ScoreField';
-import URLField from './URLField';
+import SearchResultItem from './SearchResultItem';
 import './SitesSearch.css';
 import history from './history';
 import InfiniteScroll from 'react-infinite-scroller';
+import PropTypes from 'prop-types';
 
 
 class SitesSearch extends Component {
   itemsPerPage = 20;
+  favs = new Favorites();
 
   state = {
     loading: false,
@@ -20,6 +21,7 @@ class SitesSearch extends Component {
     userQuery: '',
     hits: 0,
     pageLoaded: null,
+    favorites: [],
   };
 
   componentDidMount() {
@@ -30,6 +32,12 @@ class SitesSearch extends Component {
       if (q !== null && q !== '') {
         this.doSearch(q);
       }
+    }
+
+    // load favorites
+    let fav = this.favs.getAll();
+    if (fav.length > 0) {
+      this.setState({favorites: fav});
     }
   }
 
@@ -115,21 +123,7 @@ class SitesSearch extends Component {
 
     if (this.state.searchResultItems.length > 0) {
       this.state.searchResultItems.forEach((site) => {
-        var row = (
-          <Link key={site._source.url} to={`/sites/${ encodeURIComponent(site._source.url) }`} className='SitesSearch'>
-            <div className='SitesSearch row'>
-              <div className='col-9 col-sm-10 col-md-10'>
-                <LocationLabel level={site._source.meta.level} type={site._source.meta.type} district={site._source.meta.district} city={site._source.meta.city} state={site._source.meta.state} truncate={true} />
-                <URLField url={site._source.url} link={false} />
-              </div>
-              <div className='col-3 col-sm-2 col-md-2 d-flex'>
-                <ScoreField score={site._source.score} maxScore={15} />
-              </div>
-            </div>
-          </Link>
-        );
-
-        rows.push(row);
+        rows.push(<SearchResultItem key={site._source.url} site={site} />);
       });
     }
 
@@ -149,7 +143,14 @@ class SitesSearch extends Component {
       </div>
     );
 
-    var noresult = [placeholder, improve];
+    var favorites = null;
+    if (this.state.favorites.length > 0) {
+      favorites = (
+        <FavoritesList key='favs' urls={this.state.favorites} sizeLimit={this.itemsPerPage}/>
+      );
+    }
+
+    var noresult = [favorites, placeholder, improve];
     var resultFound = (
       <div className='row results'>
           <div className='col-12'>
@@ -181,5 +182,9 @@ class SitesSearch extends Component {
     );
   }
 }
+
+SitesSearch.propTypes = {
+  sitesCount: PropTypes.number,
+};
 
 export default SitesSearch;
