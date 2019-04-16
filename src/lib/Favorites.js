@@ -5,7 +5,7 @@ export class Favorites {
   /**
    * Reads all favourites
    */
-  readAll() {
+  getAll() {
     var favsString = this.store.getItem(this.itemName);
 
     if (favsString === null || typeof(favsString) === 'undefined' || favsString === '') {
@@ -21,7 +21,7 @@ export class Favorites {
    * @param String key
    */
   include(key) {
-    var favs = this.readAll();
+    var favs = this.getAll();
     if (favs.includes(key)) {
       return true;
     }
@@ -33,7 +33,7 @@ export class Favorites {
    * @param String key 
    */
   add(key) {
-    var favs = this.readAll();
+    var favs = this.getAll();
     if (favs.includes(key)) {
       return;
     }
@@ -51,7 +51,7 @@ export class Favorites {
    * @param String key 
    */
   remove(key) {
-    var favs = this.readAll();
+    var favs = this.getAll();
     var filtered = favs.filter(function(value, index, arr){
       return value !== key;
     });
