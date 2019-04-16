@@ -188,7 +188,7 @@ class SiteDetailsPage extends Component {
             this.state.site.rating.SITE_REACHABLE.value ?
             <div>
               <hr />
-              <Screenshots urls={this.state.site.checks.url_canonicalization} lastUpdated={this.props.lastUpdated}/>
+              <Screenshots url={this.state.site.checks.url_canonicalization[0]} />
             </div>
             : null
           }
@@ -448,31 +448,29 @@ class Screenshots extends Component {
     this._isMounted = true;
 
     var baseURL = 'http://green-spider-screenshots.sendung.de';
-    
-    // load data
-    if (this.props.urls && this.props.urls.length > 0) {
-      let url = this.props.urls[0];
 
-      axios.get(`/api/v1/screenshots/site?url=${encodeURIComponent(url)}&date=${this.props.lastUpdated}`)
+    // load data
+    if (this.props.url) {
+      let url = this.props.url;
+
+      axios.get(`/api/v1/screenshots/site?url=${encodeURIComponent(url)}`)
         .then((response) => {
+          console.debug(response.data);
           // Success
-          
           let screenshots = null;
 
           if (response.data.length > 0) {
             screenshots = {mobile: null, desktop: null};
 
-            for (var i=0; i<response.data.length; i++) {
+            for (let i=0; i<response.data.length; i++) {
               response.data[i].screenshot_url = response.data[i].screenshot_url.replace(baseURL, '/screenshots');
-              var width = response.data[i].size[0];
+              let width = response.data[i].size[0];
               if (width < 500) {
                 screenshots.mobile = response.data[i];
               } else {
                 screenshots.desktop = response.data[i];
               }
             }
-
-            // TODO: rewrite screenshot URLs
           }
 
           if (this._isMounted) {
@@ -508,18 +506,27 @@ class Screenshots extends Component {
         return <div>Aktuell sind keine Screenshots vorhanden</div>;
       }
     }
-    
-    var mobile = (
-      <a className='screenshot' href={this.state.screenshots.mobile.screenshot_url} target='_blank' rel='noopener noreferrer' title='Screenshot für Smartphone-Ansicht anzeigen'>
-        <img className='screenshot' src={this.state.screenshots.mobile.screenshot_url} width='100%' alt='Mobile Screenshot' />
-      </a>
-    );
 
-    var desktop = (
-      <a className='screenshot' href={this.state.screenshots.desktop.screenshot_url} target='_blank' rel='noopener noreferrer' title='Screenshot für Desktop-Ansicht anzeigen'>
-        <img className='screenshot' src={this.state.screenshots.desktop.screenshot_url} width='100%' alt='Desktop Screenshot' />
-      </a>
-    );
+    let mobile = null;
+    let desktop = null;
+    let created = null;
+
+    if (this.state.screenshots.mobile !== null) {
+      mobile = (
+        <a className='screenshot' href={'https://green-spider.netzbegruenung.de'+this.state.screenshots.mobile.screenshot_url} target='_blank' rel='noopener noreferrer' title='Screenshot für Smartphone-Ansicht anzeigen'>
+          <img className='screenshot' src={this.state.screenshots.mobile.screenshot_url} width='100%' alt='Mobile Screenshot' />
+        </a>
+      );
+      created = this.state.screenshots.mobile.created;
+    }
+    if (this.state.screenshots.desktop !== null) {
+      desktop = (
+        <a className='screenshot' href={'https://green-spider.netzbegruenung.de'+this.state.screenshots.desktop.screenshot_url} target='_blank' rel='noopener noreferrer' title='Screenshot für Desktop-Ansicht anzeigen'>
+          <img className='screenshot' src={this.state.screenshots.desktop.screenshot_url} width='100%' alt='Desktop Screenshot' />
+        </a>
+      );
+      created = this.state.screenshots.desktop.created;
+    }
 
     return (
       <div className='row'>
@@ -530,7 +537,7 @@ class Screenshots extends Component {
           </div>
           <div className='row'>
             <div className='col-12 text-right'>
-              <small>Screenshots vom {new Date(this.state.screenshots.mobile.created).toLocaleDateString('de-DE')}</small>
+              <small>Screenshots vom {new Date(created).toLocaleDateString('de-DE')}</small>
             </div>
           </div>
         </div>
