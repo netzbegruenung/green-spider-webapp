@@ -1,3 +1,5 @@
+[![Docker Repository on Quay](https://quay.io/repository/netzbegruenung/green-spider-webapp/status "Docker Repository on Quay")](https://quay.io/repository/netzbegruenung/green-spider-webapp)
+
 # Green Spider Webapp
 
 This web application is built to display [Green Spider](http://github.com/netzbegruenung/green-spider/) results publicly.
