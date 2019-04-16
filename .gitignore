@@ -23,6 +23,9 @@ yarn-error.log*
 # cache
 /proxy-cache
 
+# elasticsearch dev volume
+/elasticsearch
+
 # secret key we never want to share
 /secrets
 /test-certs

@@ -9,6 +9,8 @@ import _ from 'underscore';
 
 
 class SiteDetailsPage extends Component {
+  _isMounted = false;
+
   state = {
     isLoading: true,
     site: null,
@@ -16,6 +18,8 @@ class SiteDetailsPage extends Component {
   };
 
   componentDidMount() {
+    this._isMounted = true;
+
     // ensure that this view is opened at the top
     // when coming from the SiteSearch
     window.scrollTo(0, 0);
@@ -23,23 +27,28 @@ class SiteDetailsPage extends Component {
     // load data
     let url = this.props.match.match.params.siteId;
 
-    axios.get(`/api/v1/spider-results/site?url=${url}&date=${this.props.lastUpdated}`)
+    axios.get(`/api/v1/spider-results/site?url=${url}`)
       .then((response) => {
-        // handle success
-        this.setState({
-          isLoading: false,
-          site: response.data,
-          url: decodeURIComponent(url),
-        });
+        if (this._isMounted) {
+          // handle success
+          this.setState({
+            isLoading: false,
+            site: response.data,
+            url: decodeURIComponent(url),
+          });
+        }
       })
       .catch((error) => {
         // handle error
         console.error(error);
-        this.setState({isLoading: false});
-      })
-      .then(() => {
-        // always executed
+        if (this._isMounted) {
+          this.setState({isLoading: false});
+        }
       });
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   render() {
@@ -173,7 +182,7 @@ class SiteDetailsPage extends Component {
 
           <hr />
 
-          <ScoreComparisonWidget allSites={this.props.sitesHash} thisSite={this.state.site} maxScore={15} />
+          <ScoreComparisonWidget sitesCount={this.props.sitesCount} thisSite={this.state.site} maxScore={15} />
 
           {
             this.state.site.rating.SITE_REACHABLE.value ?
@@ -428,12 +437,16 @@ class SocialMediaLinksField extends Component {
 
 
 class Screenshots extends Component {
+  _isMounted = false;
+
   state = {
     isLoading: true,
     screenshots: null,
   };
 
   componentDidMount() {
+    this._isMounted = true;
+
     var baseURL = 'http://green-spider-screenshots.sendung.de';
     
     // load data
@@ -462,24 +475,29 @@ class Screenshots extends Component {
             // TODO: rewrite screenshot URLs
           }
 
-          this.setState({
-            isLoading: false,
-            screenshots: screenshots,
-          });
+          if (this._isMounted) {
+            this.setState({
+              isLoading: false,
+              screenshots: screenshots,
+            });
+          }
         })
         .catch((error) => {
           // handle error
           console.error(error);
-          this.setState({isLoading: false});
-        })
-        .then(() => {
-          // always executed
+          if (this._isMounted) {
+            this.setState({isLoading: false});
+          }
         });
     } else {
-      this.setState({
-        isLoading: false,
-      });
+      if (this._isMounted) {
+        this.setState({isLoading: false});
+      }
     }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   render() {
@@ -582,53 +600,82 @@ class NetworkErrorsField extends Component {
 }
 
 class ScoreComparisonWidget extends Component {
-  calculateIndizes() {
-    var countAll = 0;
-    var countType = 0;
-    var countState = 0;
-    var indexAll = 0;
-    var indexSiteType = 0;
-    var indexState = 0;
-    for (var url of Object.keys(this.props.allSites)) {
-      countAll++;
+  state = {
+    numLowerSites: null,
+    numSitesOfType: null,
+    numLowerSitesOfType: null,
+    numSitesOfState: null,
+    numLowerSitesOfState: null,
+  };
 
-      var site = this.props.allSites[url];
-
-      if (site.meta.type === this.props.thisSite.meta.type && site.meta.level === this.props.thisSite.meta.level) {
-        countType++;
+  componentDidMount() {
+    if (this.props.sitesCount) {
+      // compare to all sites
+      var q1 = '+score:[0 TO '+ this.props.thisSite.score +'] -score:'+ this.props.thisSite.score;
+      axios.get('/api/v1/spider-results/count/?q=' + encodeURIComponent(q1))
+        .then((response) => {
+          this.setState({
+            numLowerSites: response.data.count
+          });
+        });
+      
+      // compare to sites of same type
+      if (this.props.thisSite.meta.type && this.props.thisSite.meta.level) {
+        var q2 = '+meta.type:' + this.props.thisSite.meta.type + ' +meta.level:"' + this.props.thisSite.meta.level + '"';
+        axios.get('/api/v1/spider-results/count/?q=' + encodeURIComponent(q2))
+          .then((response) => {
+            this.setState({
+              numSitesOfType: response.data.count
+            });
+          });
+        var q3 = '+meta.type:' + this.props.thisSite.meta.type + ' +meta.level:"' + this.props.thisSite.meta.level + '" +score:[0 TO '+ this.props.thisSite.score +'] -score:'+ this.props.thisSite.score;
+        axios.get('/api/v1/spider-results/count/?q=' + encodeURIComponent(q3))
+          .then((response) => {
+            this.setState({
+              numLowerSitesOfType: response.data.count
+            });
+          });
       }
-      if (site.meta.state === this.props.thisSite.meta.state) {
-        countState++;
+      
+      // compare to sites of same state
+      if (this.props.thisSite.meta.state) {
+        var q4 = '+meta.state:"' + this.props.thisSite.meta.state + '"';
+        axios.get('/api/v1/spider-results/count/?q=' + encodeURIComponent(q4))
+          .then((response) => {
+            this.setState({
+              numSitesOfState: response.data.count
+            });
+          });
+        var q5 = '+meta.state:"' + this.props.thisSite.meta.state + '" +score:[0 TO '+ this.props.thisSite.score +'] -score:'+ this.props.thisSite.score;
+        axios.get('/api/v1/spider-results/count/?q=' + encodeURIComponent(q5))
+          .then((response) => {
+            this.setState({
+              numLowerSitesOfState: response.data.count
+            });
+          });
       }
 
-      if (site.score < this.props.thisSite.score) {
-        indexAll++;
-        if (site.meta.type === this.props.thisSite.meta.type && site.meta.level === this.props.thisSite.meta.level) {
-          indexSiteType++;
-        }
-        if (site.meta.state === this.props.thisSite.meta.state) {
-          indexState++;
-        }
-      }
-    }
-
-    indexAll = indexAll / countAll;
-    indexSiteType = indexSiteType / countType;
-    indexState = indexState / countState;
-
-    return {
-      all: indexAll,
-      siteType: indexSiteType,
-      state: indexState
     }
   }
 
+  
   render() {
-    if (this.props.allSites === null) {
+    if (this.props.sitesCount === null) {
       return <div className='row d-flex'></div>;
     }
 
-    var index = this.calculateIndizes();
+    var lowerSites = (this.state.numLowerSites !== null) ? (this.state.numLowerSites / this.props.sitesCount * 100).toFixed(1) : '–';
+    var lowerSitesOfType = (this.state.numSitesOfType !== null && this.state.numLowerSitesOfType !== null) ? (this.state.numLowerSitesOfType / this.state.numSitesOfType * 100).toFixed(1) : '–';
+    var lowerSitesOfState = (this.state.numSitesOfState !== null && this.state.numLowerSitesOfState !== null) ? (this.state.numLowerSitesOfState / this.state.numSitesOfState * 100).toFixed(1) : '–';
+
+    var rows = [<div key='all'>Besser als { lowerSites }% aller Sites</div>];
+
+    if (this.state.numSitesOfType !== null) {
+      rows.push(<div key='type'>Besser als { lowerSitesOfType }% aller <TypeField level={this.props.thisSite.meta.level} type={this.props.thisSite.meta.type} />-Sites</div>);
+    }
+    if (this.state.numSitesOfState !== null) {
+      rows.push(<div key='state'>Besser als { lowerSitesOfState }% aller Sites in <StateField state={this.props.thisSite.meta.state} /></div>);
+    }
 
     return (
       <div className='row d-flex'>
@@ -636,9 +683,7 @@ class ScoreComparisonWidget extends Component {
           Punkte: <ScoreField score={this.props.thisSite.score} maxScore={this.props.maxScore} />
         </div>
         <div className='col-8 align-self-center'>
-          <div>Besser als { Math.round(index.all * 100) }% aller Sites</div>
-          <div>Besser als { Math.round(index.siteType * 100) }% aller <TypeField level={this.props.thisSite.meta.level} type={this.props.thisSite.meta.type} />-Sites</div>
-          <div>Besser als { Math.round(index.state * 100) }% aller Sites in <StateField state={this.props.thisSite.meta.state} /></div>
+          {rows}
         </div>
       </div>
     );
