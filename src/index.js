@@ -8,7 +8,6 @@ import NavBar from './NavBar';
 import SitesSearch from './SitesSearch';
 import SiteDetailsPage from './SiteDetailsPage';
 import history from './history';
-import { unregister } from './registerServiceWorker';
 
 
 class App extends React.Component {
@@ -59,4 +58,8 @@ ReactDOM.render(<App />, document.getElementById('root'));
 
 
 // temporary: unregister old service eorker
-unregister();
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.ready.then(registration => {
+    registration.unregister();
+  });
+}
