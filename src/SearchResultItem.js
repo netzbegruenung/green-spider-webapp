@@ -21,7 +21,7 @@ class SearchResultItem extends Component {
             <URLField url={this.props.site._source.url} link={false} />
           </div>
           <div className='col-3 col-sm-2 col-md-2 d-flex'>
-            <ScoreField score={this.props.site._source.score} maxScore={15} />
+            <ScoreField score={this.props.site._source.score} maxScore={16} />
           </div>
         </div>
       </Link>
