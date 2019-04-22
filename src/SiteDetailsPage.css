@@ -42,3 +42,8 @@
 .SiteDetailsPage .support-link {
   margin-top: 1rem;
 }
+
+.criterium-details {
+  color: rgb(33, 37, 41);
+  font-size: 14px;
+}

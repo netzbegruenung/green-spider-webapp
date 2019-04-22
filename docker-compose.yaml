@@ -9,6 +9,9 @@ services:
     volumes:
       - ${PWD}/config/nginx/nginx_dev.conf:/etc/nginx/nginx.conf
       - ${PWD}/proxy-cache:/var/cache/nginx
+    depends_on:
+      - webapp
+      - api
 
   # The webapp dev server on port 3000
   webapp:

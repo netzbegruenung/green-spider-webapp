@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { TypeField, StateField } from './LocationLabel';
+import CriteriumField from './CriteriumField';
 import FavouriteAddRemove from './FavouriteAddRemove';
 import LocationLabel from './LocationLabel';
 import ScoreField from './ScoreField';
@@ -71,7 +72,7 @@ class SiteDetailsPage extends Component {
       },
       {
         criterium: 'CANONICAL_URL',
-        component: <CanonicalURLField key='canonicalurl' data={this.state.site.rating.CANONICAL_URL} />,
+        component: <CanonicalURLField key='canonicalurl' data={this.state.site.rating.CANONICAL_URL} details={this.state.site.checks.url_canonicalization} />,
         data: this.state.site.rating.CANONICAL_URL,
       },
       {
@@ -116,12 +117,12 @@ class SiteDetailsPage extends Component {
       },
       {
         criterium: 'NO_SCRIPT_ERRORS',
-        component: <ScriptErrorsField key='scripterrors' data={this.state.site.rating.NO_SCRIPT_ERRORS} />,
+        component: <ScriptErrorsField key='scripterrors' data={this.state.site.rating.NO_SCRIPT_ERRORS} details={this.state.site.checks.load_in_browser} />,
         data: this.state.site.rating.NO_SCRIPT_ERRORS,
       },
       {
         criterium: 'NO_NETWORK_ERRORS',
-        component: <NetworkErrorsField key='networkerrors' data={this.state.site.rating.NO_NETWORK_ERRORS} />,
+        component: <NetworkErrorsField key='networkerrors' data={this.state.site.rating.NO_NETWORK_ERRORS} details={this.state.site.checks.load_in_browser} />,
         data: this.state.site.rating.NO_NETWORK_ERRORS,
       },
       {
@@ -252,42 +253,22 @@ class SiteDetailsPage extends Component {
   }
 }
 
-class IconGood extends Component {
-  render() {
-    return <i className='icon ion-md-checkmark-circle align-middle'></i>;
-  }
-}
-
-class IconBad extends Component {
-  render() {
-    return <i className='icon ion-md-close-circle align-middle'></i>;
-  }
-}
-
-class IconOptimize extends Component {
-  render() {
-    return <i className='icon ion-md-construct align-middle'></i>;
-  }
-}
-
-class CriteriumField extends Component {
-  render() {
-    if (this.props.type === 'positive') {
-      return <div key={this.props.keyProp} className='good'><IconGood /> <span className='align-middle'>{this.props.title}</span></div>;
-    } else if (this.props.type === 'mediocre') {
-      return <div key={this.props.keyProp} className='mediocre'>{ this.props.icon ? this.props.icon : <IconOptimize /> }<span className='align-middle'>{this.props.title}</span></div>;
-    } else {
-      return <div key={this.props.keyProp} className='bad'><IconBad /> <span className='align-middle'>{this.props.title}</span></div>;
-    }
-  }
-}
-
 class CanonicalURLField extends Component {
   render() {
     if (this.props.data.value) {
       return <CriteriumField keyProp='canonicalurl' type='positive' title='Verschiedene URL-Varianten werden auf eine einzige umgeleitet' />;
     }
-    return <CriteriumField keyProp='canonicalurl' type='negative' title='Verschiedene URL-Varianten sollten auf eine einzige umgeleitet werden' />;
+
+    return <CriteriumField keyProp='canonicalurl' type='negative' title='Verschiedene URL-Varianten sollten auf eine einzige umgeleitet werden'>
+        <p>Die Site ist unter den folgenden URLs erreichbar:</p>
+        <ul>
+          {
+            this.props.details.map((url) => {
+              return <li key={url}>{url}</li>;
+            })
+          }
+        </ul>
+      </CriteriumField>;
   }
 }
 
@@ -460,7 +441,6 @@ class Screenshots extends Component {
 
       axios.get(`/api/v1/screenshots/site?url=${encodeURIComponent(url)}`)
         .then((response) => {
-          console.debug(response.data);
           // Success
           let screenshots = null;
 
@@ -587,25 +567,76 @@ class WWWOptionalField extends Component {
   }
 }
 
-class ScriptErrorsField extends Component {
-  render() {
-    if (typeof this.props.data !== 'undefined') {
-      if (this.props.data.value) {
-        return <CriteriumField keyProp='noscripterrors' type='positive' title='Es wurden keine JavaScript-Fehler festgestellt' />;
-      }
-      return <CriteriumField keyProp='noscripterrors' type='negative' title='JavaScript-Fehler beheben' />;
+class LoggedErrorsField extends Component {
+  /**
+   * A cheap hash function for hashing strings
+   * 
+   * @param String The string to be hashed
+   */
+  hashCode(str) {
+    var hash = 0;
+    if (str.length === 0) {
+        return hash;
     }
-    return <div></div>;
+    for (let i=0; i < str.length; i++) {
+        var char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash.toString();
   }
 }
 
-class NetworkErrorsField extends Component {
+class NetworkErrorsField extends LoggedErrorsField {
+  state = {
+    logEntries: [],
+  };
+
+  componentDidMount() {
+    let logEntries = Object.values(this.props.details)[0].logs;
+    let filteredEntries = logEntries.filter(item => item.source !== 'javascript');
+    if (filteredEntries.length > 0) {
+      this.setState({logEntries: filteredEntries});
+    }
+  }
+
+  render() {
+    if (typeof this.props.data === 'undefined') {
+      return <div></div>;
+    }
+
+    if (this.props.data.value) {
+      return <CriteriumField keyProp='nonetworkerrors' type='positive' title='Es wurden keine Probleme beim Laden verknüpfter Ressourcen festgestellt' />;
+    }
+
+    return (
+      <CriteriumField keyProp='nonetworkerrors' type='negative' title='Fehler beim Laden verknüpfter Ressourcen vermeiden'>
+        <table className='table'>
+          <tbody>
+            {
+              this.state.logEntries.map((item) => {
+                return <tr key={super.hashCode([item.source, item.level, item.message].join('-'))}>
+                    <td><span className='badge badge-primary'>{item.source}</span></td>
+                    <td><span className='badge badge-secondary'>{item.level}</span></td>
+                    <td>{item.message}</td>
+                  </tr>;
+              })
+            }
+          </tbody>
+        </table>
+      </CriteriumField>  
+    );
+  }
+}
+
+
+class ScriptErrorsField extends LoggedErrorsField {
   render() {
     if (typeof this.props.data !== 'undefined') {
       if (this.props.data.value) {
-        return <CriteriumField keyProp='nonetworkerrors' type='positive' title='Es wurden keine Probleme beim Laden verknüpfter Ressourcen festgestellt' />;
+        return <LoggedErrorsField keyProp='noscripterrors' type='positive' title='Es wurden keine JavaScript-Fehler festgestellt' />;
       }
-      return <CriteriumField keyProp='nonetworkerrors' type='negative' title='Fehler beim Laden verknüpfter Ressourcen vermeiden' />;
+      return <LoggedErrorsField keyProp='noscripterrors' type='negative' title='JavaScript-Fehler beheben' details={this.props.details} />;
     }
     return <div></div>;
   }
