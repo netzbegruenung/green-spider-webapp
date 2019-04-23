@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { TypeField, StateField } from './LocationLabel';
+import CriteriumField from './CriteriumField';
 import FavouriteAddRemove from './FavouriteAddRemove';
 import LocationLabel from './LocationLabel';
 import ScoreField from './ScoreField';
@@ -7,6 +8,25 @@ import URLField from './URLField';
 import './SiteDetailsPage.css';
 import axios from 'axios';
 import _ from 'underscore';
+
+
+/**
+ * A cheap hash function for hashing strings
+ * 
+ * @param String The string to be hashed
+ */
+function hashCode(str) {
+  var hash = 0;
+  if (str.length === 0) {
+      return hash;
+  }
+  for (let i=0; i < str.length; i++) {
+      var char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+  }
+  return hash.toString();
+}
 
 
 class SiteDetailsPage extends Component {
@@ -71,7 +91,7 @@ class SiteDetailsPage extends Component {
       },
       {
         criterium: 'CANONICAL_URL',
-        component: <CanonicalURLField key='canonicalurl' data={this.state.site.rating.CANONICAL_URL} />,
+        component: <CanonicalURLField key='canonicalurl' data={this.state.site.rating.CANONICAL_URL} details={this.state.site.checks.url_canonicalization} />,
         data: this.state.site.rating.CANONICAL_URL,
       },
       {
@@ -116,17 +136,17 @@ class SiteDetailsPage extends Component {
       },
       {
         criterium: 'NO_THIRD_PARTY_COOKIES',
-        component: <CookiesField key='cookies' data={this.state.site.rating.NO_THIRD_PARTY_COOKIES} />,
+        component: <CookiesField key='cookies' data={this.state.site.rating.NO_THIRD_PARTY_COOKIES} details={this.state.site.checks.load_in_browser} />,
         data: this.state.site.rating.NO_THIRD_PARTY_COOKIES,
       },
       {
         criterium: 'NO_SCRIPT_ERRORS',
-        component: <ScriptErrorsField key='scripterrors' data={this.state.site.rating.NO_SCRIPT_ERRORS} />,
+        component: <ScriptErrorsField key='scripterrors' data={this.state.site.rating.NO_SCRIPT_ERRORS} details={this.state.site.checks.load_in_browser} />,
         data: this.state.site.rating.NO_SCRIPT_ERRORS,
       },
       {
         criterium: 'NO_NETWORK_ERRORS',
-        component: <NetworkErrorsField key='networkerrors' data={this.state.site.rating.NO_NETWORK_ERRORS} />,
+        component: <NetworkErrorsField key='networkerrors' data={this.state.site.rating.NO_NETWORK_ERRORS} details={this.state.site.checks.load_in_browser} />,
         data: this.state.site.rating.NO_NETWORK_ERRORS,
       },
       {
@@ -257,42 +277,23 @@ class SiteDetailsPage extends Component {
   }
 }
 
-class IconGood extends Component {
-  render() {
-    return <i className='icon ion-md-checkmark-circle align-middle'></i>;
-  }
-}
-
-class IconBad extends Component {
-  render() {
-    return <i className='icon ion-md-close-circle align-middle'></i>;
-  }
-}
-
-class IconOptimize extends Component {
-  render() {
-    return <i className='icon ion-md-construct align-middle'></i>;
-  }
-}
-
-class CriteriumField extends Component {
-  render() {
-    if (this.props.type === 'positive') {
-      return <div key={this.props.keyProp} className='good'><IconGood /> <span className='align-middle'>{this.props.title}</span></div>;
-    } else if (this.props.type === 'mediocre') {
-      return <div key={this.props.keyProp} className='mediocre'>{ this.props.icon ? this.props.icon : <IconOptimize /> }<span className='align-middle'>{this.props.title}</span></div>;
-    } else {
-      return <div key={this.props.keyProp} className='bad'><IconBad /> <span className='align-middle'>{this.props.title}</span></div>;
-    }
-  }
-}
-
 class CanonicalURLField extends Component {
   render() {
     if (this.props.data.value) {
       return <CriteriumField keyProp='canonicalurl' type='positive' title='Verschiedene URL-Varianten werden auf eine einzige umgeleitet' />;
     }
-    return <CriteriumField keyProp='canonicalurl' type='negative' title='Verschiedene URL-Varianten sollten auf eine einzige umgeleitet werden' />;
+
+    return <CriteriumField keyProp='canonicalurl' type='negative' title='Verschiedene URL-Varianten sollten auf eine einzige umgeleitet werden'>
+        <p>Die Site ist unter den folgenden URLs erreichbar:</p>
+        <ul>
+          {
+            this.props.details.map((url) => {
+              return <li key={url}>{url}</li>;
+            })
+          }
+        </ul>
+        <p>Es sollte eine URL ausgewählt werden, auf die von allen anderen Varianten weiter geleitet wird.</p>
+      </CriteriumField>;
   }
 }
 
@@ -347,7 +348,12 @@ class DNSResolvableField extends Component {
     if (this.props.data.value) {
       return <CriteriumField keyProp='dnsresolvable' type='positive' title='Es existiert ein DNS-Eintrag für den Host- bzw. Domainnamen' />
     }
-    return <CriteriumField keyProp='dnsresolvable' type='negative' title='Die Domain bzw. der Hostname benötigt einen DNS-Eintrag' />
+
+    return <CriteriumField keyProp='dnsresolvable' type='negative' title='Die Domain bzw. der Hostname benötigt einen DNS-Eintrag'>
+        <p>Das bedeutet in der Regel, dass eine genutzte Domain beim Registrar nicht verlängert wurde. Falls der Hostname
+          der Site nicht identisch mit der Domain ist, und stattdessen beispielsweise mit `www.` beginnt, könnte es sich
+          auch um eine fehlende Konfiguration beim DNS-Provider handeln.</p>
+      </CriteriumField>;
   }
 }
 
@@ -356,7 +362,12 @@ class FaviconField extends Component {
     if (this.props.data.value) {
       return <CriteriumField keyProp='favicon' type='positive' title='Die Site hat ein Icon' />;
     }
-    return <CriteriumField keyProp='favicon' type='negative' title='Die Site benötigt ein Icon' />;
+
+    return <CriteriumField keyProp='favicon' type='negative' title='Die Site benötigt ein Icon'>
+        <p>Ein Icon hilft Nutzer*innen, ein Browser-Tab oder ein Bookmark der Site besser wieder zu erkennen.</p>
+        <p>Anleitung: <a href='https://www.w3.org/2005/10/howto-favicon' target='_blank' rel='noopener noreferrer'>How
+        to Add a Favicon to your Site</a></p>
+      </CriteriumField>;
   }
 }
 
@@ -365,16 +376,93 @@ class FeedField extends Component {
     if (this.props.data.value) {
       return <CriteriumField keyProp='feed' type='positive' title='Die Site verweist auf mind. einen RSS-/Atom-Feed' />;
     }
-    return <CriteriumField keyProp='feed' type='negative' title='Es sollten RSS- oder Atom-Feeds angeboten und mittels rel=alternate link verlinkt werden' />;
+    
+    return <CriteriumField keyProp='feed' type='negative' title='Es sollten RSS- oder Atom-Feeds angeboten und mittels rel=alternate link verlinkt werden'>
+        <p>Feeds helfen Suchmaschinen dabei, aktuelle Meldungen zeitnah nach Veröffentlichung in ihren Suchindex
+          aufzunehmen, was die Site besser in Suchergebnissen platziert. Außerdem helfen sie auch versierten 
+          Nutzer*innen dabei, über neue Inhalte auf dem laufenden zu bleiben.</p>
+        <p>Die meistgenutzten CMSe unterstützen die Veröffentlichung von Feeds ohne zusätzlichen Aufwand.</p>
+        <p>Anleitung: <a href='https://netzbegruenung.github.io/unofficial-gcms-docs/#/rss-feeds' target='_blank'
+          rel='noopener noreferrer'>RSS Feeds aktivieren in GCMS</a></p>
+      </CriteriumField>;
   }
 }
 
 class CookiesField extends Component {
+  state = {thirdPartyCookies: null};
+
+  componentDidMount() {
+    let url = Object.keys(this.props.details)[0];
+    let cookies = this.props.details[url].cookies;
+    if (typeof cookies !== 'undefined') {
+      let parsedURL = new URL(url);
+      let thirdPartyCookies = cookies.filter(cookie => {
+        return parsedURL.hostname.indexOf(cookie.host_key);
+      });
+      if (thirdPartyCookies.length > 0) {
+        this.setState({thirdPartyCookies: thirdPartyCookies});
+      }
+    }
+  }
+
+  expiryString(duration) {
+    if (duration < 60 * 3) {
+      return Math.floor(duration).toString() + " Sekunden";
+    }
+    duration = duration / 60.0;
+    if (duration < 100) {
+      return Math.floor(duration).toString() + " Minuten";
+    }
+    duration = duration / 60.0;
+    if (duration < 48) {
+      return Math.floor(duration).toString() + " Stunden";
+    }
+    duration = duration / 24.0;
+    if (duration < 100) {
+      return Math.floor(duration).toString() + " Tage";
+    }
+    duration = duration / 30.0;
+    if (duration < 15) {
+      return Math.floor(duration).toString() + " Monate";
+    }
+    duration = duration * 30.0 / 365;
+    return Math.floor(duration).toString() + " Jahre";
+  }
+
   render() {
     if (this.props.data.value) {
       return <CriteriumField keyProp='feed' type='positive' title='Es werden keine Third Party Cookies gesetzt' />;
     }
-    return <CriteriumField keyProp='feed' type='negative' title='Beim Laden der Site werden Third Party Cookies gesetzt' />;
+
+    return (
+      <CriteriumField keyProp='feed' type='negative' title='Beim Laden der Site werden Third Party Cookies gesetzt'>
+        <p>Cookies von Dritten, auch Third Party Cookies genannt, erlauben das Verfolgen von Nutzer*innen über
+          die Grenzen der Seite, auf der die Cookies gesetzt wurden, hinweg. Damit stellen sie einen Eingriff in die
+          Informationelle Selbstbestimmung dar, insbesondere dann, wenn sie ohne Einwilligung gesetzt werden.</p>
+        <p>Da Green Spider keine Einwilligung in das Setzen von Cookies gibt, werden alle nachstehenden Cookies
+          ohne explizite Einwilligung gesetzt.</p>
+        <table className='table' style={{marginTop: 20}}>
+          <thead>
+            <tr>
+              <th>Domain</th>
+              <th>Name</th>
+              <th>Lebensdauer</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              this.state.thirdPartyCookies !== null ? this.state.thirdPartyCookies.map((cookie) => {
+                return <tr key={[cookie.host_key, cookie.name].join('-')}>
+                    <td>{cookie.host_key}</td>
+                    <td>{cookie.name}</td>
+                    <td>{this.expiryString(Math.abs(cookie.expires_utc - cookie.creation_utc) / 1000000)}</td>
+                  </tr>;
+              }) : null
+            }
+          </tbody>
+        </table>
+      </CriteriumField>
+    );
   }
 }
 
@@ -385,13 +473,23 @@ class FontField extends Component {
       font = 'Titillium';
     }
 
-    if (typeof this.props.data !== 'undefined') {
-      if (this.props.data.value) {
-        return <CriteriumField keyProp='font' type='positive' title={`Die Site verwendet die Schriftart ${font}`} />;
-      }
-      return <CriteriumField keyProp='font' type='negative' title={`Die Site sollte die Schriftart ${font} verwenden`} />;
+    if (typeof this.props.data === 'undefined') {
+      return <div />;
     }
-    return <div></div>;
+
+    if (this.props.data.value) {
+      return <CriteriumField keyProp='font' type='positive' title={`Die Site verwendet die Schriftart ${font}`} />;
+    }
+
+    return <CriteriumField keyProp='font' type='negative' title={`Die Site sollte die Schriftart ${font} verwenden`}>
+        <p>Die Schriftart Arvo bzw. der Variante für Überschriften, Arvo Gruen, ist ein markanter Bestandteil der
+          Corporate-Design-Richtlinien von BÜNDNIS 90/DIE GRÜNEN. Die Verwendung der Schrift hilft dabei, den Absender
+          kenntlich zu machen, so wie es auch der Einsatz der richtigen Farben und die Verwendung des Logos tun.</p>
+        <p>Die empfohlenen Schriften stehen unter{' '}
+          <a href='https://github.com/netzbegruenung/webfonts' target='_blank'
+          rel="noopener noreferrer">github.com/netzbegruenung/webfonts</a> für die
+          einfache Verwendung auf Webseiten zur Verfügung.</p>
+      </CriteriumField>;
   }
 }
 
@@ -400,7 +498,17 @@ class HTTPSField extends Component {
     if (this.props.data.value) {
       return <CriteriumField keyProp='https' type='positive' title='Die Site ist über HTTPS erreichbar' />;
     }
-    return <CriteriumField keyProp='https' type='negative' title='Die Site sollte über HTTPS erreichbar sein' />;
+
+    return <CriteriumField keyProp='https' type='negative' title='Die Site sollte über HTTPS erreichbar sein'>
+      <p>Per TLS verschlüsselte HTTP-Verbindungen schützen Nutzer*innen vor der Preisgabe privater Informationen.
+        Entsprechend gehört HTTPS für immer mehr Nutzer*innen bei einem vertrauenswürdigen Webangebot zu den
+        Pflicht-Kriterien. Auch viele Unternehmen, darunter beispielsweise Google, haben inzwischen die HTTPS-Verbindung
+        zum Standard erklärt. Seiten, die nicht per HTTPS erreichbar sind, werden entsprechend von Google im
+        Suchergebnis schlechter platziert.</p>
+      <p>Inzwischen gibt es TLS-Zertifikate für Verschlüsselte Server-Kommunikation auch kostenlos, z. B. von
+        <a href='https://letsencrypt.org/getting-started/' target='_blank' rel='noopener noreferrer'>Let's Encrypt</a>.</p>
+      <p>Lesetipp: <a href='https://webmasters.googleblog.com/2014/08/https-as-ranking-signal.html' target='_blank' rel='noopener noreferrer'>HTTPS as a ranking signal </a></p>
+    </CriteriumField>;
   }
 }
 
@@ -432,7 +540,16 @@ class ResponsiveField extends Component {
     } else if (this.props.data.score > 0) {
       return <CriteriumField keyProp='responsive' type='mediocre' title='Mobile Endgeräte könnten noch besser unterstützt werden' />;
     }
-    return <CriteriumField keyProp='responsive' type='negative' title='Mobile Endgeräte sollten unterstützt werden' />;
+
+    return <CriteriumField keyProp='responsive' type='negative' title='Mobile Endgeräte sollten unterstützt werden'>
+        <p>Green Spider testet, wie breit die Startseite der Site auf verschieden breiten Bildschirmen ausfällt.
+          Ist in einer Breite die Seite breiter als der Bildschirm, so gilt der Test als nicht bestanden.
+          Nutzer*innen con Smartphones sehen in diesen Fällen häufig einen horizontalen Scrollbalken oder müssen
+          zum vollständigen Betrachten der Seite die Inhalte horizontal Verschieben.</p>
+
+        <p>Tipp: Zieh den Browserfenster so schmal wie Du kannst, im besten Fall auf 360 Pixel Breite. Damit erhältst
+          Du einen Eindruck, welche Inhalte über den Rand hinausragen.</p>
+      </CriteriumField>;
   }
 }
 
@@ -441,7 +558,11 @@ class ContactLinkField extends Component {
     if (this.props.data.value) {
       return <CriteriumField keyProp='contactlink' type='positive' title='Die Site hat einen Link "Kontakt"' />;
     }
-    return <CriteriumField keyProp='contactlink' type='negative' title='Es sollte einen Link namens "Kontakt" geben' />;
+
+    return <CriteriumField keyProp='contactlink' type='negative' title='Es sollte einen Link namens "Kontakt" geben'>
+        <p>Wenn Nutzer*innen mit dem Betreiber einer Site in Kontakt treten wollen, ist ein gut sichtbarer Link mit der
+          Beschriftung "Kontakt" eine der einfachsten Möglichkeit.</p>
+      </CriteriumField>;
   }
 }
 
@@ -450,7 +571,12 @@ class SocialMediaLinksField extends Component {
     if (this.props.data.value) {
       return <CriteriumField keyProp='socialmedialinks' type='positive' title='Die Site verlinkt auf Social Media Profile' />;
     }
-    return <CriteriumField keyProp='socialmedialinks' type='negative' title='Es sollte mind. einen Link zu einem Social Media Profil geben' />;
+
+    return <CriteriumField keyProp='socialmedialinks' type='negative' title='Es sollte mind. einen Link zu einem Social Media Profil geben'>
+        <p>Über Social-Media-Profile ist es möglich, häufiger mit Nutzer*innen in Kontakt zu treten. Sofern es Profile
+          gibt, sollten diese am besten von jeder Seite der Site verlinkt werden. Aktuell werden Links zu Facebook, 
+          Twitter und Instagram gewertet.</p>
+      </CriteriumField>;
   }
 }
 
@@ -600,27 +726,87 @@ class WWWOptionalField extends Component {
   }
 }
 
-class ScriptErrorsField extends Component {
+class LoggedErrorsField extends Component {
   render() {
-    if (typeof this.props.data !== 'undefined') {
-      if (this.props.data.value) {
-        return <CriteriumField keyProp='noscripterrors' type='positive' title='Es wurden keine JavaScript-Fehler festgestellt' />;
-      }
-      return <CriteriumField keyProp='noscripterrors' type='negative' title='JavaScript-Fehler beheben' />;
+    if (this.props.type === 'positive') {
+      return <CriteriumField keyProp={this.props.keyProp} type='positive' title={this.props.titlePositive} />;
     }
-    return <div></div>;
+
+    return (
+      <CriteriumField keyProp={this.props.keyProp} type='negative' title={this.props.titleNegative}>
+        { this.props.logEntries !== null && this.props.logEntries !== [] ?
+          <table className='table'>
+            <tbody>
+              {
+                this.props.logEntries.map((item) => {
+                  return <tr key={hashCode([item.source, item.level, item.message].join('-'))}>
+                      <td><span className='badge badge-primary'>{item.source}</span></td>
+                      <td><span className={item.level === 'SEVERE' ? 'badge badge-danger' : 'badge badge-warning'}>{item.level}</span></td>
+                      <td><code>{item.message}</code></td>
+                    </tr>;
+                })
+              }
+            </tbody>
+          </table>
+        :
+        <p>Es können leider keine Details zu den gesammelten Fehlern angezeigt werden.</p> }
+      </CriteriumField>  
+    );
   }
 }
 
 class NetworkErrorsField extends Component {
-  render() {
-    if (typeof this.props.data !== 'undefined') {
-      if (this.props.data.value) {
-        return <CriteriumField keyProp='nonetworkerrors' type='positive' title='Es wurden keine Probleme beim Laden verknüpfter Ressourcen festgestellt' />;
+  state = {logEntries: null};
+
+  componentDidMount() {
+    let logEntries = Object.values(this.props.details)[0].logs;
+    if (typeof logEntries !== 'undefined') {
+      let filteredEntries = logEntries.filter(item => item.source !== 'javascript');
+      if (filteredEntries.length > 0) {
+        this.setState({logEntries: filteredEntries});
       }
-      return <CriteriumField keyProp='nonetworkerrors' type='negative' title='Fehler beim Laden verknüpfter Ressourcen vermeiden' />;
     }
-    return <div></div>;
+  }
+
+  render() {
+    if (typeof this.props.data === 'undefined') {
+      return <div />;
+    }
+
+    if (this.props.data.value) {
+      return <LoggedErrorsField keyProp='nonetworkerrors' type='positive' titlePositive='Es wurden keine Probleme beim Laden verknüpfter Ressourcen festgestellt' />;
+    }
+
+    return (
+      <LoggedErrorsField keyProp='nonetworkerrors' type='negative' titleNegative='Fehler beim Laden verknüpfter Ressourcen vermeiden' logEntries={this.state.logEntries} />
+    );
+  }
+}
+
+
+class ScriptErrorsField extends Component {
+  state = {logEntries: null};
+
+  componentDidMount() {
+    let logEntries = Object.values(this.props.details)[0].logs;
+    if (typeof logEntries !== 'undefined') {
+      let filteredEntries = logEntries.filter(item => item.source === 'javascript');
+      if (filteredEntries.length > 0) {
+        this.setState({logEntries: filteredEntries});
+      }
+    }
+  }
+
+  render() {
+    if (typeof this.props.data === 'undefined') {
+      return <div />;
+    }
+    
+    if (this.props.data.value) {
+      return <LoggedErrorsField keyProp='noscripterrors' type='positive' titlePositive='Es wurden keine JavaScript-Fehler festgestellt' />;
+    }
+
+    return <LoggedErrorsField keyProp='noscripterrors' type='negative' titleNegative='JavaScript-Fehler beheben' logEntries={this.state.logEntries} />;
   }
 }
 
