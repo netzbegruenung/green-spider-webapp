@@ -1,0 +1,24 @@
+.CriteriumField.bad, .CriteriumField.bad .CriteriumField-title > a {
+  color: #ae4b53;
+  font-size: 1rem;
+}
+.CriteriumField.mediocre, .CriteriumField.mediocre .CriteriumField-title > a {
+  color: #c49863;
+  font-size: 1rem;
+}
+.CriteriumField.good {
+  color: #46962b;
+  font-size: 1rem;
+}
+
+.CriteriumField-details {
+  color: rgb(33, 37, 41);
+  font-size: 14px;
+}
+.CriteriumField-details p {
+  margin-bottom: 0.4rem
+}
+
+.CriteriumField-title > a {
+  text-decoration: underline;
+}
