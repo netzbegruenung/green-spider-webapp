@@ -116,6 +116,11 @@ class SiteDetailsPage extends Component {
         data: this.state.site.rating.FEEDS,
       },
       {
+        criterium: 'NO_THIRD_PARTY_COOKIES',
+        component: <CookiesField key='cookies' data={this.state.site.rating.NO_THIRD_PARTY_COOKIES} />,
+        data: this.state.site.rating.NO_THIRD_PARTY_COOKIES,
+      },
+      {
         criterium: 'NO_SCRIPT_ERRORS',
         component: <ScriptErrorsField key='scripterrors' data={this.state.site.rating.NO_SCRIPT_ERRORS} details={this.state.site.checks.load_in_browser} />,
         data: this.state.site.rating.NO_SCRIPT_ERRORS,
@@ -184,7 +189,7 @@ class SiteDetailsPage extends Component {
 
           <hr />
 
-          <ScoreComparisonWidget sitesCount={this.props.sitesCount} thisSite={this.state.site} maxScore={15} />
+          <ScoreComparisonWidget sitesCount={this.props.sitesCount} thisSite={this.state.site} maxScore={16} />
 
           {
             this.state.site.rating.SITE_REACHABLE.value ?
@@ -342,6 +347,15 @@ class FeedField extends Component {
       return <CriteriumField keyProp='feed' type='positive' title='Die Site verweist auf mind. einen RSS-/Atom-Feed' />;
     }
     return <CriteriumField keyProp='feed' type='negative' title='Es sollten RSS- oder Atom-Feeds angeboten und mittels rel=alternate link verlinkt werden' />;
+  }
+}
+
+class CookiesField extends Component {
+  render() {
+    if (this.props.data.value) {
+      return <CriteriumField keyProp='feed' type='positive' title='Es werden keine Third Party Cookies gesetzt' />;
+    }
+    return <CriteriumField keyProp='feed' type='negative' title='Beim Laden der Site werden Third Party Cookies gesetzt' />;
   }
 }
 
