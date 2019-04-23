@@ -362,6 +362,7 @@ class FaviconField extends Component {
     if (this.props.data.value) {
       return <CriteriumField keyProp='favicon' type='positive' title='Die Site hat ein Icon' />;
     }
+
     return <CriteriumField keyProp='favicon' type='negative' title='Die Site benötigt ein Icon'>
         <p>Ein Icon hilft Nutzer*innen, ein Browser-Tab oder ein Bookmark der Site besser wieder zu erkennen.</p>
         <p>Anleitung: <a href='https://www.w3.org/2005/10/howto-favicon' target='_blank' rel='noopener noreferrer'>How
@@ -375,6 +376,7 @@ class FeedField extends Component {
     if (this.props.data.value) {
       return <CriteriumField keyProp='feed' type='positive' title='Die Site verweist auf mind. einen RSS-/Atom-Feed' />;
     }
+    
     return <CriteriumField keyProp='feed' type='negative' title='Es sollten RSS- oder Atom-Feeds angeboten und mittels rel=alternate link verlinkt werden'>
         <p>Feeds helfen Suchmaschinen dabei, aktuelle Meldungen zeitnah nach Veröffentlichung in ihren Suchindex
           aufzunehmen, was die Site besser in Suchergebnissen platziert. Außerdem helfen sie auch versierten 
