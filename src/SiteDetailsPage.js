@@ -86,7 +86,7 @@ class SiteDetailsPage extends Component {
       },
       {
         criterium: 'SITE_REACHABLE',
-        component: <ReachableField key='reachable' data={this.state.site.rating.SITE_REACHABLE} />,
+        component: <ReachableField key='reachable' data={this.state.site.rating.SITE_REACHABLE} details={this.state.site.checks.url_reachability} />,
         data: this.state.site.rating.SITE_REACHABLE,
       },
       {
@@ -529,7 +529,29 @@ class ReachableField extends Component {
     if (this.props.data.value) {
       return <CriteriumField keyProp='reachable' type='positive' title='Die Site war beim Test erreichbar' />;
     }
-    return <CriteriumField keyProp='reachable' type='negative' title='Die Site war beim letzten Test nicht erreichbar' />;
+
+    return <CriteriumField keyProp='reachable' type='negative' title='Die Site war beim letzten Test nicht erreichbar'>
+      <table className='table'>
+        <thead>
+          <tr>
+            <th>URL</th>
+            <th>HTTP Status</th>
+            <th>Fehlermeldung</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            Object.values(this.props.details).map(item => {
+              return <tr key={item.url}>
+                <td>{item.url}</td>
+                <td>{item.status}</td>
+                <td>{item.exception ? item.exception.message : null}</td>
+              </tr>;
+            })
+          }
+        </tbody>
+      </table>
+    </CriteriumField>;
   }
 }
 
