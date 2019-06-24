@@ -292,7 +292,7 @@ class CanonicalURLField extends Component {
             })
           }
         </ul>
-        <p>Es sollte eine URL ausgewählt werden, auf die von allen anderen Varianten weiter geleitet wird.</p>
+        <p>Es sollte eine URL ausgewählt werden, auf die von allen anderen Varianten weiter geleitet wird. Für die Weiterleitung sollte ein HTTP Response mit Code 301 oder alternativ 302 genutzt werden.</p>
       </CriteriumField>;
   }
 }
