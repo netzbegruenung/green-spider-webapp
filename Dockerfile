@@ -14,7 +14,7 @@ ADD src /src
 
 RUN yarn build
 
-FROM nginx:1.16-alpine
+FROM nginx:1.17-alpine
 
 # move this file, as /etc/nginx/ will be masked by a volume
 RUN cp /etc/nginx/mime.types /mime.types
