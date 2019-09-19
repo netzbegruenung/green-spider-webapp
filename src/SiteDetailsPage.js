@@ -292,7 +292,7 @@ class CanonicalURLField extends Component {
             })
           }
         </ul>
-        <p>Es sollte eine URL ausgewählt werden, auf die von allen anderen Varianten weiter geleitet wird.</p>
+        <p>Es sollte eine URL ausgewählt werden, auf die von allen anderen Varianten weiter geleitet wird. Für die Weiterleitung sollte ein HTTP Response mit Code 301 oder alternativ 302 genutzt werden.</p>
       </CriteriumField>;
   }
 }
@@ -564,6 +564,8 @@ class ResponsiveField extends Component {
     }
 
     return <CriteriumField keyProp='responsive' type='negative' title='Mobile Endgeräte sollten unterstützt werden'>
+        <p>Immer mehr Menschen nutzen das Web über ein mobiles Endgerät wie z. B. ein Smartphone. Die Site sollte
+          dies unterstützen, indem das Layout sich <em>"responsive"</em> an das Endgerät anpasst.</p>
         <p>Green Spider testet, wie breit die Startseite der Site auf verschieden breiten Bildschirmen ausfällt.
           Ist in einer Breite die Seite breiter als der Bildschirm, so gilt der Test als nicht bestanden.
           Nutzer*innen con Smartphones sehen in diesen Fällen häufig einen horizontalen Scrollbalken oder müssen
