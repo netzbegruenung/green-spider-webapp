@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "https://green-spider.netzbegruenung.de",
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "bootstrap": ">=4.3.1",
     "chalk": "^2.4.2",
     "chroma-js": "^2.0.3",
