@@ -25,6 +25,10 @@ class HTTPSField extends Component {
 
 class HTTPSProblemsTable extends Component {
   render() {
+    if (typeof this.props.details === 'undefined') {
+      return undefined;
+    }
+    
     return <div>
       <p>Sämtliche auflösbaren Hostnamen bzw. Domains sollten per HTTPS erreichbar sein, und sei es nur zum Zweck einer Weiterleitung. Die folgende(n) URL(s) wurden überprüft:</p>
       <ul>
