@@ -4,10 +4,10 @@ import ReactDOM from 'react-dom';
 import { Router, Route } from "react-router-dom";
 import '../node_modules/bootstrap/dist/css/bootstrap.css';
 import './index.css';
-import NavBar from './NavBar';
+import NavBar from './ui/NavBar';
 import SitesSearch from './SitesSearch';
 import SiteDetailsPage from './SiteDetailsPage';
-import history from './history';
+import history from './lib/history';
 
 
 class App extends React.Component {
