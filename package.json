@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "https://green-spider.netzbegruenung.de",
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "bootstrap": ">=4.3.1",
     "chalk": "^2.4.2",
     "chroma-js": "^2.0.3",
@@ -14,7 +14,7 @@
     "fs-extra": "3.0.1",
     "history": "^4.9.0",
     "jest": "23.6.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "merge": "1.2.1",
     "object-assign": "4.1.1",
     "promise": "^8.0.3",
