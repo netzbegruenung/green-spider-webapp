@@ -1,13 +1,14 @@
 import { Favorites } from './lib/Favorites';
-import FavoritesList from './FavoritesList';
+import FavoritesList from './ui/FavoritesList';
 import axios from 'axios';
 import React, { Component } from 'react';
-import SearchForm from './SearchForm';
-import SearchResultItem from './SearchResultItem';
-import './SitesSearch.css';
-import history from './history';
+import SearchForm from './ui/SearchForm';
+import SearchResultItem from './ui/SearchResultItem';
+import history from './lib/history';
 import InfiniteScroll from 'react-infinite-scroller';
 import PropTypes from 'prop-types';
+
+import './SitesSearch.css';
 
 
 class SitesSearch extends Component {

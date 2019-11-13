@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Favorites } from './lib/Favorites';
+import { Favorites } from '../lib/Favorites';
 
 class FavouriteAddRemove extends Component {
   state = {
