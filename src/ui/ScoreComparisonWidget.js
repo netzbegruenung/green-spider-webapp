@@ -2,6 +2,8 @@ import axios from 'axios';
 import React, { Component } from 'react';
 import ScoreField from './ScoreField';
 import { TypeField, StateField } from './LocationLabel';
+import { APIEndpoint } from '../index';
+
 
 class ScoreComparisonWidget extends Component {
   state = {
@@ -16,7 +18,7 @@ class ScoreComparisonWidget extends Component {
     if (this.props.sitesCount) {
       // compare to all sites
       var q1 = '+score:[0 TO '+ this.props.thisSite.score +'] -score:'+ this.props.thisSite.score;
-      axios.get('/api/v1/spider-results/count/?q=' + encodeURIComponent(q1))
+      axios.get(APIEndpoint + '/api/v1/spider-results/count/?q=' + encodeURIComponent(q1))
         .then((response) => {
           this.setState({
             numLowerSites: response.data.count
@@ -26,14 +28,14 @@ class ScoreComparisonWidget extends Component {
       // compare to sites of same type
       if (this.props.thisSite.meta.type && this.props.thisSite.meta.level) {
         var q2 = '+meta.type:' + this.props.thisSite.meta.type + ' +meta.level:"' + this.props.thisSite.meta.level + '"';
-        axios.get('/api/v1/spider-results/count/?q=' + encodeURIComponent(q2))
+        axios.get(APIEndpoint + '/api/v1/spider-results/count/?q=' + encodeURIComponent(q2))
           .then((response) => {
             this.setState({
               numSitesOfType: response.data.count
             });
           });
         var q3 = '+meta.type:' + this.props.thisSite.meta.type + ' +meta.level:"' + this.props.thisSite.meta.level + '" +score:[0 TO '+ this.props.thisSite.score +'] -score:'+ this.props.thisSite.score;
-        axios.get('/api/v1/spider-results/count/?q=' + encodeURIComponent(q3))
+        axios.get(APIEndpoint + '/api/v1/spider-results/count/?q=' + encodeURIComponent(q3))
           .then((response) => {
             this.setState({
               numLowerSitesOfType: response.data.count
@@ -44,14 +46,14 @@ class ScoreComparisonWidget extends Component {
       // compare to sites of same state
       if (this.props.thisSite.meta.state) {
         var q4 = '+meta.state:"' + this.props.thisSite.meta.state + '"';
-        axios.get('/api/v1/spider-results/count/?q=' + encodeURIComponent(q4))
+        axios.get(APIEndpoint + '/api/v1/spider-results/count/?q=' + encodeURIComponent(q4))
           .then((response) => {
             this.setState({
               numSitesOfState: response.data.count
             });
           });
         var q5 = '+meta.state:"' + this.props.thisSite.meta.state + '" +score:[0 TO '+ this.props.thisSite.score +'] -score:'+ this.props.thisSite.score;
-        axios.get('/api/v1/spider-results/count/?q=' + encodeURIComponent(q5))
+        axios.get(APIEndpoint + '/api/v1/spider-results/count/?q=' + encodeURIComponent(q5))
           .then((response) => {
             this.setState({
               numLowerSitesOfState: response.data.count

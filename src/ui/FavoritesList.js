@@ -2,6 +2,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import SearchResultItem from './SearchResultItem';
+import { APIEndpoint } from '../index';
 
 class FavoritesList extends Component {
   state = {
@@ -16,7 +17,7 @@ class FavoritesList extends Component {
       return 'url:"' + url + '"';
     });
     let queryTerm = queryTermParts.join(' OR ');
-    axios.get('/api/v1/spider-results/query/?q=' + encodeURI(queryTerm))
+    axios.get(APIEndpoint + '/api/v1/spider-results/query/?q=' + encodeURI(queryTerm))
       .then((response) => {
         if (response.data.hits.total > 0 && response.data.hits.hits.length > 0) {
           this.setState({

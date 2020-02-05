@@ -22,6 +22,7 @@ import FavouriteAddRemove from './ui/FavouriteAddRemove';
 import URLField from './ui/URLField';
 import SiteIcon from './ui/SiteIcon';
 import ScoreComparisonWidget from './ui/ScoreComparisonWidget';
+import { APIEndpoint } from './index';
 
 import './SiteDetailsPage.css';
 
@@ -45,7 +46,7 @@ class SiteDetailsPage extends Component {
     // load data
     let url = this.props.match.match.params.siteId;
 
-    axios.get(`/api/v1/spider-results/site?url=${url}`)
+    axios.get(APIEndpoint + `/api/v1/spider-results/site?url=${url}`)
       .then((response) => {
         if (this._isMounted) {
           // handle success
@@ -93,7 +94,7 @@ class SiteDetailsPage extends Component {
       },
       {
         criterium: 'HTTPS',
-        component: <HTTPSField key='https' data={this.state.site.rating.HTTPS} />,
+        component: <HTTPSField key='https' data={this.state.site.rating.HTTPS} details={this.state.site.checks.url_reachability} />,
         data: this.state.site.rating.HTTPS,
       },
       {

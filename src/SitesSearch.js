@@ -7,7 +7,7 @@ import SearchResultItem from './ui/SearchResultItem';
 import history from './lib/history';
 import InfiniteScroll from 'react-infinite-scroller';
 import PropTypes from 'prop-types';
-
+import { APIEndpoint } from './index';
 import './SitesSearch.css';
 
 
@@ -89,7 +89,7 @@ class SitesSearch extends Component {
 
   getResultsPage = (term, page) => {
     var from = page * this.itemsPerPage;
-    axios.get('/api/v1/spider-results/query/?from=' + from + '&q=' + encodeURI(term))
+    axios.get(APIEndpoint + '/api/v1/spider-results/query/?from=' + from + '&q=' + encodeURI(term))
         .then((response) => {
           var allResultItems = [];
           

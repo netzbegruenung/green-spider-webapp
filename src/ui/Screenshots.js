@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { Component } from 'react';
+import { APIEndpoint } from '../index';
 
 class Screenshots extends Component {
   _isMounted = false;
@@ -18,7 +19,7 @@ class Screenshots extends Component {
     if (this.props.url) {
       let url = this.props.url;
 
-      axios.get(`/api/v1/screenshots/site?url=${encodeURIComponent(url)}`)
+      axios.get(APIEndpoint + `/api/v1/screenshots/site?url=${encodeURIComponent(url)}`)
         .then((response) => {
           // Success
           let screenshots = null;

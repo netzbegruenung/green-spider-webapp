@@ -9,6 +9,9 @@ import SitesSearch from './SitesSearch';
 import SiteDetailsPage from './SiteDetailsPage';
 import history from './lib/history';
 
+export const APIEndpoint = '';
+// For development against production API:
+//export const APIEndpoint = 'https://cors-anywhere.herokuapp.com/https://green-spider.netzbegruenung.de';
 
 class App extends React.Component {
   state = {
@@ -17,13 +20,13 @@ class App extends React.Component {
   };
 
   componentDidMount() {
-    axios.get('/api/v1/spider-results/last-updated/')
+    axios.get(APIEndpoint + '/api/v1/spider-results/last-updated/')
       .then((response) => {
         if (response.data.last_updated !== this.state.sitesLastUpdated) {
           this.setState({sitesLastUpdated: response.data.last_updated});
         }
       });
-    axios.get('/api/v1/spider-results/count/')
+    axios.get(APIEndpoint + '/api/v1/spider-results/count/')
       .then((response) => {
         this.setState({sitesCount: response.data.count});
       });
