@@ -93,7 +93,7 @@ class SiteDetailsPage extends Component {
       },
       {
         criterium: 'HTTPS',
-        component: <HTTPSField key='https' data={this.state.site.rating.HTTPS} />,
+        component: <HTTPSField key='https' data={this.state.site.rating.HTTPS} details={this.state.site.checks.url_reachability} />,
         data: this.state.site.rating.HTTPS,
       },
       {
