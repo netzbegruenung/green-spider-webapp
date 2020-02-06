@@ -187,6 +187,8 @@ class SiteDetailsPage extends Component {
           channel = 'urwahl3000';
         } else if (this.state.site.checks.generator[url] === 'wordpress-gruenes-internet') {
           channel = 'gruenes-internet-de';
+        } else if (this.state.site.checks.generator[url] === 'typo3-gcms') {
+          channel = 'gruenes-cms';
         }
       }
       let supportLink = <p className='support-link'>Das sagt Dir nichts, oder Du weißt nicht, wo Du anfangen sollst? Hol Dir Unterstützung im Chatbegrünung-Kanal <a href={'https://chatbegruenung.de/channel/' + channel} rel='noopener noreferrer' target='_blank'>{`#${channel}`}</a>.</p>;
