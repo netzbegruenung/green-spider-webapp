@@ -10,6 +10,8 @@ import FeedField from './ui/criterium_fields/FeedField';
 import FontField from './ui/criterium_fields/FontField';
 import HTTPSField from './ui/criterium_fields/HTTPSField';
 import NetworkErrorsField from './ui/criterium_fields/NetworkErrorsField';
+import NetworkPayloadField from './ui/criterium_fields/NetworkPayloadField';
+import NetworkRequestsField from './ui/criterium_fields/NetworkRequestsField';
 import ReachableField from './ui/criterium_fields/ReachableField';
 import ResponseDurationField from './ui/criterium_fields/ResponseDurationField';
 import ResponsiveField from './ui/criterium_fields/ResponsiveField';
@@ -150,6 +152,16 @@ class SiteDetailsPage extends Component {
         criterium: 'HTTP_RESPONSE_DURATION',
         component: <ResponseDurationField key='responseduration' data={this.state.site.rating.HTTP_RESPONSE_DURATION} />,
         data: this.state.site.rating.HTTP_RESPONSE_DURATION,
+      },
+      {
+        criterium: 'NETWORK_REQUESTS',
+        component: <NetworkRequestsField key='networkrequests' data={this.state.site.rating.NETWORK_REQUESTS} />,
+        data: this.state.site.rating.NETWORK_REQUESTS,
+      },
+      {
+        criterium: 'NETWORK_PAYLOAD',
+        component: <NetworkPayloadField key='networkpayload' data={this.state.site.rating.NETWORK_PAYLOAD} />,
+        data: this.state.site.rating.NETWORK_PAYLOAD,
       },
     ];
 
