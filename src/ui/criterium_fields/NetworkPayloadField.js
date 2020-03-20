@@ -8,17 +8,19 @@ class NetworkPayloadField extends Component {
     } else if (this.props.data.score >= 0) {
       return <CriteriumField keyProp='duration' type='mediocre' title={`Beim Laden werden mäßige Datenmengen (${ Math.round(this.props.data.value / 1000) } KB) übertragen.`}>
         <p>Je geringer die Datenmenge, die beim Laden einer Seite zu übertragen ist, desto
-        schneller baut sich die Seite bei den Endnutzer_innen auf.</p>
-      <p>Seiten, die beim Aufruf sehr große Datenmengen übertragen, schließen insbesondere Menschen
+        schneller baut sich die Seite bei den Nutzer*innen auf. Und desto wahrscheinlicher ist es,
+        dass Nutzer*innen das endgültige Laden der Seite abwarten und weitere Seiten innerhalb der Site aufsuchen.</p>
+        <p>Seiten, die beim Aufruf sehr große Datenmengen übertragen, schließen insbesondere Menschen
         mit geringeren Bandbreiten, in ländlicheren Regionen, mit älteren und weniger leistungsfähigen Endgeräten von der Teilhabe aus.</p>
       </CriteriumField>;
     }
 
     return <CriteriumField keyProp='duration' type='negative' title={`Beim Laden sollten kleinere Datenmengen übertragen werden (aktuell: ${ Math.round(this.props.data.value / 1000) }) KB)`}>
       <p>Je geringer die Datenmenge, die beim Laden einer Seite zu übertragen ist, desto
-        schneller baut sich die Seite bei den Endnutzer_innen auf.</p>
+      schneller baut sich die Seite bei den Nutzer*innen auf. Und desto wahrscheinlicher ist es,
+      dass Nutzer*innen das endgültige Laden der Seite abwarten und weitere Seiten innerhalb der Site aufsuchen.</p>
       <p>Seiten, die beim Aufruf sehr große Datenmengen übertragen, schließen insbesondere Menschen
-        mit geringeren Bandbreiten, in ländlicheren Regionen, mit älteren und weniger leistungsfähigen Endgeräten von der Teilhabe aus.</p>
+      mit geringeren Bandbreiten, in ländlicheren Regionen, mit älteren und weniger leistungsfähigen Endgeräten von der Teilhabe aus.</p>
     </CriteriumField>;
   }
 }
