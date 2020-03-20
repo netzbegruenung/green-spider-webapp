@@ -5,7 +5,7 @@ class NetworkPayloadField extends Component {
   render() {
     if (this.props.data.score === this.props.data.max_score) {
       return <CriteriumField keyProp='duration' type='positive' title={`Beim Laden werden geringe Datenmengen (${ Math.round(this.props.data.value / 1000) } KB) übertragen.`} />
-    } else if (this.props.data.score >= 0) {
+    } else if (this.props.data.score >= 0.001) {
       return <CriteriumField keyProp='duration' type='mediocre' title={`Beim Laden werden mäßige Datenmengen (${ Math.round(this.props.data.value / 1000) } KB) übertragen.`}>
         <p>Je geringer die Datenmenge, die beim Laden einer Seite zu übertragen ist, desto
         schneller baut sich die Seite bei den Nutzer*innen auf. Und desto wahrscheinlicher ist es,

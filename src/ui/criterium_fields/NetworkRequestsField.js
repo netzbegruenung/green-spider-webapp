@@ -5,7 +5,7 @@ class NetworkRequestsField extends Component {
   render() {
     if (this.props.data.score === this.props.data.max_score) {
       return <CriteriumField keyProp='duration' type='positive' title={`Beim Laden werden nur wenige (${ this.props.data.value }) HTTP-Anfragen benötigt.`} />;
-    } else if (this.props.data.score >= 0) {
+    } else if (this.props.data.score >= 0.001) {
       return <CriteriumField keyProp='duration' type='mediocre' title={`Beim Laden werden relativ wenige (${ this.props.data.value }) HTTP-Anfragen benötigt.`}>
         <p>Je weniger HTTP-Anfragen für das Laden einer Seite nötig sind, desto schneller kann die Seite geladen werden. Das gilt inbesondere für Netzwerkverbindungen
           mit hohen Latenzen, allen voran Mobilfunknetze.</p>
