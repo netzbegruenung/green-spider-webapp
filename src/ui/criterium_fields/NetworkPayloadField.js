@@ -15,7 +15,7 @@ class NetworkPayloadField extends Component {
       </CriteriumField>;
     }
 
-    return <CriteriumField keyProp='duration' type='negative' title={`Beim Laden sollten kleinere Datenmengen übertragen werden (aktuell: ${ Math.round(this.props.data.value / 1000) }) KB)`}>
+    return <CriteriumField keyProp='duration' type='negative' title={`Beim Laden sollten kleinere Datenmengen übertragen werden (aktuell: ${ Math.round(this.props.data.value / 1000) } KB)`}>
       <p>Je geringer die Datenmenge, die beim Laden einer Seite zu übertragen ist, desto
       schneller baut sich die Seite bei den Nutzer*innen auf. Und desto wahrscheinlicher ist es,
       dass Nutzer*innen das endgültige Laden der Seite abwarten und weitere Seiten innerhalb der Site aufsuchen.</p>
