@@ -37,14 +37,37 @@ class CriteriumField extends Component {
         </div>
       );
     } else if (this.props.type === 'mediocre') {
+      if (this.props.children === null || typeof this.props.children === 'undefined') {
+        return (
+          <div key={this.props.keyProp} className='CriteriumField mediocre'>
+            { this.props.icon ? this.props.icon : <IconOptimize /> }
+            <span className='align-middle'>{this.props.title}</span>
+          </div>
+        );
+      }
+
       return (
         <div key={this.props.keyProp} className='CriteriumField mediocre'>
-          { this.props.icon ? this.props.icon : <IconOptimize /> }
-          <span className='align-middle'>{this.props.title}</span>
+          <div className='CriteriumField-title'>
+            <a href='/' onClick={this.showHide}>
+              { this.props.icon ? this.props.icon : <IconOptimize /> }
+              <span className='align-middle'>{this.props.title}</span>
+            </a>
+          </div>
+          <Transition in={this.state.expanded} timeout={transitionDuration}>
+            {state => (
+              <div style={{
+                ...defaultTransitionStyle,
+                ...transitionStyles[state]
+                }} className={`CriteriumField-details CriteriumField-${state}`}>
+                {this.props.children}
+              </div>
+            )}
+          </Transition>
         </div>
       );
     } else {
-      if (this.props.children === null || typeof this.props.children === 'undefined') {
+      if (this.props.children === null || typeof this.props.children === 'undefined') {
         return (
           <div key={this.props.keyProp} className='CriteriumField bad'>
             <div><IconBad /> <span className='align-middle'>{this.props.title}</span></div>
