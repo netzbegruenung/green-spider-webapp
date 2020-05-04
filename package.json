@@ -6,7 +6,7 @@
   "dependencies": {
     "axios": "^0.19.2",
     "bootstrap": ">=4.4.1",
-    "chalk": "^3.0.0",
+    "chalk": "^4.0.0",
     "chroma-js": "^2.1.0",
     "css-loader": "0.28.11",
     "dotenv": "^8.2.0",
