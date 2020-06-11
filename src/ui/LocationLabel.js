@@ -95,7 +95,7 @@ class StateField extends Component {
         label = 'SH';
         break;
       case 'Thüringen':
-        label = 'SN';
+        label = 'TH';
         break;
       default:
         label = this.props.state;
