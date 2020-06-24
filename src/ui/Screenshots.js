@@ -28,10 +28,10 @@ class Screenshots extends Component {
 
             for (let i=0; i<response.data.length; i++) {
               response.data[i].screenshot_url = response.data[i].screenshot_url.replace(baseURL, '/screenshots');
-              let width = response.data[i].size[0];
-              if (width < 500) {
+
+              if (response.data[i].size === [360, 640]) {
                 screenshots.mobile = response.data[i];
-              } else {
+              } else if (response.data[i].size === [1500, 1500]) {
                 screenshots.desktop = response.data[i];
               }
             }
