@@ -13,7 +13,7 @@
     "dotenv-expand": "^5.1.0",
     "fs-extra": "8.1.0",
     "history": "^4.10.1",
-    "jest": "25.5.4",
+    "jest": "26.4.0",
     "lodash": "^4.17.13",
     "merge": "1.2.1",
     "object-assign": "4.1.1",
