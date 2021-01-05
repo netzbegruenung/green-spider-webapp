@@ -1,4 +1,4 @@
-FROM node:10-slim AS builder
+FROM node:12-slim AS builder
 
 WORKDIR /
 
@@ -14,7 +14,7 @@ ADD src /src
 
 RUN yarn build
 
-FROM nginx:1.17-alpine
+FROM nginx:1.18-alpine
 
 # move this file, as /etc/nginx/ will be masked by a volume
 RUN cp /etc/nginx/mime.types /mime.types
