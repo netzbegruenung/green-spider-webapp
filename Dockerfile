@@ -1,4 +1,4 @@
-FROM node:12-slim AS builder
+FROM node:15-slim AS builder
 
 WORKDIR /
 
