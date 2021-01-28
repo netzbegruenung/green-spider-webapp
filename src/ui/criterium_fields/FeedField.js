@@ -12,7 +12,7 @@ class FeedField extends Component {
           aufzunehmen, was die Site besser in Suchergebnissen platziert. Außerdem helfen sie auch versierten 
           Nutzer*innen dabei, über neue Inhalte auf dem laufenden zu bleiben.</p>
         <p>Die meistgenutzten CMSe unterstützen die Veröffentlichung von Feeds ohne zusätzlichen Aufwand.</p>
-        <p>Anleitung: <a href='https://netzbegruenung.github.io/unofficial-gcms-docs/#/rss-feeds' target='_blank'
+        <p>Anleitung: <a href='https://confluence.netzbegruenung.de/display/SUP/RSS+Feeds+aktivieren' target='_blank'
           rel='noopener noreferrer'>RSS Feeds aktivieren in GCMS</a></p>
       </CriteriumField>;
   }
