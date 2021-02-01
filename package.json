@@ -34,7 +34,7 @@
     "whatwg-fetch": "3.0.0"
   },
   "devDependencies": {
-    "autoprefixer": "^10.2.0",
+    "autoprefixer": "^10.2.4",
     "babel-core": "^6.26.3",
     "babel-eslint": "9.0.0",
     "babel-jest": "23.6.0",
