@@ -15,7 +15,7 @@
     "history": "^4.10.1",
     "jest": "26.6.3",
     "lodash": "^4.17.20",
-    "merge": "1.2.1",
+    "merge": "2.1.1",
     "object-assign": "4.1.1",
     "promise": "^8.1.0",
     "prop-types": "^15.7.2",
