@@ -69,6 +69,7 @@ module.exports = {
   },
   performance: {
     hints: 'warning',
+    maxEntrypointSize: 1000000,
   },
   resolve: {
     // This allows you to set a fallback for where Webpack should look for modules.
