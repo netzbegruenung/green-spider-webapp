@@ -3,6 +3,7 @@ IMAGE := quay.io/netzbegruenung/green-spider:latest
 
 # Build the web application to be served by a static web server
 build:
+	yarn install
 	yarn build
 
 # Run a development server on http://localhost:8000
